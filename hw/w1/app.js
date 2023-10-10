@@ -1,6 +1,5 @@
 import express from 'express';
 import morgan from 'morgan';
-import asyncError from 'express-async-errors';
 
 import categoryRouter from './routes/category.route.js';
 import filmRouter from './routes/film.route.js';

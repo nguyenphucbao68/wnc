@@ -19,14 +19,10 @@ router.get('/:id', async function (req, res) {
 });
 
 router.post('/', async function (req, res) {
-  let film = req.body;
-  const ret = await actorModel.add(film);
-
-  film = {
-    film_id: ret[0],
-    ...film,
-  };
-  res.status(201).json(film);
+  const entity = req.body;
+  const ids = await actorModel.add(entity);
+  entity.actor_id = ids[0];
+  res.status(201).json(entity);
 });
 
 router.delete('/:id', async function (req, res) {
