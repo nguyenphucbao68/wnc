@@ -35,8 +35,9 @@ router.delete('/:id', async function (req, res) {
 
 router.patch('/:id', async function (req, res) {
   const id = req.params.id || 0;
-  const film = req.body;
-  const n = await actorModel.patch(id, film);
+  const actor = req.body;
+  console.log('actor', id, actor);
+  const n = await actorModel.patch(id, actor);
   res.json({
     affected: n,
   });

@@ -41,6 +41,10 @@ Using `npm init` or `yarn init` to create package.json
 
 Then add `"type": "module"` to package.json to use ES6 module
 
+Intall dependencies: `yarn add express morgan mysql knex`
+
+Install dev dependencies: `yarn add -d nodemon`
+
 ```json
 {
   "type": "module",
@@ -50,14 +54,14 @@ Then add `"type": "module"` to package.json to use ES6 module
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app"
+    "start": "node app",
+    "dev": "nodemon app"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.3",
-    "express-async-errors": "^3.1.1",
     "knex": "^1.0.3",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1"
@@ -65,7 +69,7 @@ Then add `"type": "module"` to package.json to use ES6 module
 }
 ```
 
-2. app.js
+1. app.js
 
 - initialize app
 

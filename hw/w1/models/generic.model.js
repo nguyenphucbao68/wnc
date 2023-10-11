@@ -26,6 +26,5 @@ export default function (table_name, id_field) {
     patch(id, entity) {
       return db(table_name).where(id_field, id).update(entity);
     },
-  }
+  };
 }
-
