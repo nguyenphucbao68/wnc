@@ -203,12 +203,12 @@ router.get('/', async function (req, res) {
 ```js
 router.get('/:id', async function (req, res) {
   const id = req.params.id || 0;
-  const film = await actorModel.findById(id);
-  if (film === null) {
+  const actor = await actorModel.findById(id);
+  if (actor === null) {
     return res.status(204).end();
   }
 
-  res.json(film);
+  res.json(actor);
 });
 ```
 
@@ -240,8 +240,8 @@ router.delete('/:id', async function (req, res) {
 ```js
 router.patch('/:id', async function (req, res) {
   const id = req.params.id || 0;
-  const film = req.body;
-  const n = await actorModel.patch(id, film);
+  const actor = req.body;
+  const n = await actorModel.patch(id, actor);
   res.json({
     affected: n,
   });
