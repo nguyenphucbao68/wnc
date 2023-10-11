@@ -3,7 +3,7 @@
 1. Nodejs
 2. NPM
 3. MySQL: using XAMPP (https://www.apachefriends.org/download.html)
-4. Library: Express, Knex, Mysql, Morgan, Express-async-errors
+4. Library: Express, Knex, Mysql
 
 ## Steps
 
@@ -63,7 +63,6 @@ Install dev dependencies: `yarn add -d nodemon`
   "dependencies": {
     "express": "^4.17.3",
     "knex": "^1.0.3",
-    "morgan": "^1.10.0",
     "mysql": "^2.18.1"
   }
 }
@@ -75,11 +74,9 @@ Install dev dependencies: `yarn add -d nodemon`
 
 ```js
 import express from 'express';
-import morgan from 'morgan';
 
 const app = express();
 app.use(express.json());
-app.use(morgan('dev'));
 
 app.get('/', function (req, res) {
   res.json({

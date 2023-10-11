@@ -1,5 +1,4 @@
 import express from 'express';
-import morgan from 'morgan';
 
 import categoryRouter from './routes/category.route.js';
 import filmRouter from './routes/film.route.js';
@@ -7,7 +6,6 @@ import actorRouter from './routes/actor.route.js';
 
 const app = express();
 app.use(express.json());
-app.use(morgan('dev'));
 
 app.get('/', function (req, res) {
   res.json({
