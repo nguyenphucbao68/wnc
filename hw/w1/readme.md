@@ -2,8 +2,8 @@
 
 1. Nodejs
 2. NPM
-3. MySQL: XAMPP (https://www.apachefriends.org/download.html)
-4. Library: Express, Knex, Mysql
+3. MySQL: using XAMPP (https://www.apachefriends.org/download.html)
+4. Library: Express, Knex, Mysql, Morgan, Express-async-errors
 
 ## Steps
 
@@ -30,12 +30,16 @@
 
 1.  Download https://drive.google.com/file/d/1xkaolV5jiKbnfe35_0_bXmcsPD9OjvDH/view
 2.  Enter phpmyadmin: http://localhost/phpmyadmin/
-3.  Create new database: "**wnc**" with _utf8mb4_general_ci_
+3.  Create new database: "**wnc**" with `_utf8mb4_general_ci_`
 4.  Enter database **"wnc" -> Import -> Choose file -> Choose your file -> Go**
 
 ### Setup Project Template
 
 1. Package.json
+
+Using `npm init` or `yarn init` to create package.json
+
+Then add `"type": "module"` to package.json to use ES6 module
 
 ```json
 {
