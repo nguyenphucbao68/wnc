@@ -41,9 +41,9 @@ Using `npm init` or `yarn init` to create package.json
 
 Then add `"type": "module"` to package.json to use ES6 module
 
-Intall dependencies: `yarn add express morgan mysql knex`
+Intall dependencies: `yarn add express mysql knex`
 
-Install dev dependencies: `yarn add -d nodemon`
+Install dev dependencies: `yarn add -D nodemon`
 
 ```json
 {
@@ -249,3 +249,5 @@ router.patch('/:id', async function (req, res) {
 ```
 
 ## Video
+
+https://drive.google.com/file/d/11h2LUiConChdjqv0VkZTQVCvydhEGsYz/view?usp=sharing
