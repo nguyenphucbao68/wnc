@@ -23,7 +23,7 @@
  *        last_update:
  *          type: string
  *          format: date-time
- *          description: The last update of the film
+ *          description: The last update of the actor
  *          example: 2006-02-15 05:03:42
  */
 const schema = {
