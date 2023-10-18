@@ -32,6 +32,7 @@ const router = express.Router();
  *               rental_rate: 0.99
  *               length: 86
  *               replacement_cost: 20.99
+ *               special_features: "Trailers,Deleted Scenes"
  *               rating: G
  *               last_update: 2006-02-15 05:03:42
  */
@@ -71,6 +72,7 @@ router.get("/", async function (req, res) {
  *               length: 86
  *               replacement_cost: 20.99
  *               rating: G
+ *               special_features: "Trailers,Deleted Scenes"
  *               last_update: 2006-02-15 05:03:42
  *       204:
  *         description: No content
@@ -117,6 +119,7 @@ router.get("/:id", async function (req, res) {
  *               length: 86
  *               replacement_cost: 20.99
  *               rating: G
+ *               special_features: "Trailers,Deleted Scenes"
  *               last_update: 2006-02-15 05:03:42
  */
 router.post("/", validate(schema), async function (req, res) {
