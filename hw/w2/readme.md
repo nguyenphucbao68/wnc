@@ -454,8 +454,16 @@ Explain the above code: Below are the steps that the above JSON schema is create
               }
             }
         ```
+   - Thirdly, we specify the `required` fields and `additionalProperties` to false so that any mismatch properties will occurs error:
 
-   - Thirdly, we define the custom keyword `specialFeatureSet` and create a file `validate.middleware.js` inside new folder `middlewares` inside `wnc/hw/w1/` as below:
+      ```js
+        ...
+        required: ["title", "language_id"],
+        additionalProperties: false,
+        ...
+      ```
+
+   - Fourthly, we define the custom keyword `specialFeatureSet` and create a file `validate.middleware.js` inside new folder `middlewares` inside `wnc/hw/w1/` as below:
 
      ```js
       import Ajv from "ajv";
