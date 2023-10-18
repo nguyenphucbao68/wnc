@@ -12,7 +12,8 @@ const router = express.Router();
  *   description: The films managing API
  * /api/films/:
  *   get:
- *     tags: [Films]
+ *     tags: 
+ *       - Films
  *     summary: Returns all films
  *     responses:
  *       200:
@@ -45,7 +46,8 @@ router.get("/", async function (req, res) {
  * @openapi
  * /api/films/{id}:
  *   get:
- *     tags: [Films]
+ *     tags: 
+ *       - Films
  *     summary: Returns a single film
  *     parameters:
  *       - name: id
@@ -77,7 +79,8 @@ router.get("/:id", async function (req, res) {
  * @openapi
  * /api/films/:
  *   post:
- *     tags: [Films]
+ *     tags: 
+ *       - Films
  *     summary: Adds a new film
  *     requestBody:
  *       description: Film object
@@ -109,7 +112,8 @@ router.post("/", validate(schema), async function (req, res) {
  * @openapi
  * /api/films/{id}:
  *   delete:
- *     tags: [Films]
+ *     tags: 
+ *       - Films
  *     summary: Removes a single film
  *     parameters:
  *       - name: id
@@ -142,7 +146,8 @@ router.delete("/:id", async function (req, res) {
  * @openapi
  * /api/films/{id}:
  *   patch:
- *     tags: [Films]
+ *     tags: 
+ *       - Films
  *     summary: Updates a single film
  *     parameters:
  *       - name: id

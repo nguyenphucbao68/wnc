@@ -598,6 +598,549 @@ Our package.json file will look like below:
 }
 ```
 
+Next, we will create a file `swagger.js` to initializes and serves Swagger documentation for our Sakila API.
+
+You can follow the step by step for the file `swagger.js` below:
+
+1. Import dependencies: These are modules that help generate and serve Swagger documentation for your API.
+
+```js
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
+...
+```
+
+2. Swagger definition:
+
+```js
+...
+// Swagger definition
+const swaggerDefinition = {
+  openapi: "3.0.0",
+  info: {
+    title: "Sakila API Documentation",
+    version: "1.0.0",
+    description: "Documentation for Sakila API",
+    contact: {
+      name: "Group 3",
+    },
+  },
+  servers: [
+    {
+      url: "http://localhost:3000",
+      description: "Development server",
+    },
+  ],
+};
+...
+```
+
+Explain the above code:
+
+ - `openapi`: "3.0.0" indicates that the API follows the `OpenAPI 3.0.0 specification`.
+ - `info` contains details like the `title`, `version` (This is the `project's version` specified in file `package.json`), `description`, and `contact` information for our API.
+ - `servers` specifies where our API is hosted. In this case, it's the development server at "http://localhost:3000".
+
+
+3. Swagger options:
+
+```js
+...
+// Options for the swagger docs
+const options = {
+  swaggerDefinition,
+  apis: ["./routes/*.js", "./schemas/*.js"],
+};
+...
+```
+Explain: 
+
+ - `options` is an object that includes the swaggerDefinition and the paths to the API route and schema files.
+ - `swaggerDefinition` is set to the previously defined swaggerDefinition.
+ - `apis` is an array containing file paths to route and schema files. This tells `swagger-jsdoc` where to look for API documentation annotations. It includes all JavaScript files in the `./routes` and `./schemas` directories that have a `.js` extension.
+
+4. Swagger options:
+
+```js
+...
+// Initialize swagger-jsdoc
+const swaggerSpecs = swaggerJSDoc(options);
+...
+```
+Explain: 
+
+ - This generates the Swagger documentation based on the configuration in above.
+
+5. Export swagger middleware function:
+
+```js
+...
+// Export swagger
+export default (app) => {
+  // Serve swagger docs
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+
+  // Serve swagger specs as JSON endpoint
+  app.get("/docs.json", (req, res) => {
+    res.json(swaggerSpecs);
+  });
+};
+...
+```
+Explain: 
+
+ - `app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs))` serves the Swagger UI at the `/api-docs` route. Users can access the Swagger documentation interface through this route. The swaggerUi.serve and swaggerUi.setup functions are used to display the Swagger UI.
+ - `app.get("/docs.json", (req, res) => {...})` serves the Swagger documentation as a JSON endpoint at the "/docs.json" route. Users or applications can access the raw Swagger JSON data from this route.
+
+Now we will update the `schemas` and `routes` of `film`, `actor`, and `category`:
+
+ 1. Film
+  
+    - `film.schema.js`
+
+      ```js
+      /**
+        ...
+        * @openapi
+        * components:
+        *   schemas:
+        *    Film:
+        *      type: object
+        *      required:
+        *        - title
+        *        - language_id
+        *      properties:
+        *        film_id:
+        *          type: integer
+        *          description: The auto-generated id of the film
+        *          example: 1
+        *        title:
+        *          type: string
+        *          description: The title of the film
+        *          example: string
+        *        description:
+        *          type: string
+        *          description: The description of the film
+        *          example: string
+        *        release_year:
+        *          type: integer
+        *          description: The release year of the film
+        *          example: 2006
+        *        language_id:
+        *          type: integer
+        *          description: The language id of the film
+        *          example: 1
+        *        original_language_id:
+        *          type: integer
+        *          description: The original language id of the film
+        *          example: 1
+        *        rental_duration:
+        *          type: integer
+        *          description: The rental duration of the film
+        *          example: 6
+        *        rental_rate:
+        *          type: number
+        *          description: The rental rate of the film
+        *          example: 0.99
+        *        length:
+        *          type: integer
+        *          description: The length of the film
+        *          example: 86
+        *        replacement_cost:
+        *          type: number
+        *          description: The replacement cost of the film
+        *          example: 20.99
+        *        rating:
+        *          type: string
+        *          description: The rating of the film
+        *          enum: [G, PG, PG-13, R, NC-17]
+        *        special_features:
+        *          type: string
+        *          description: CSV string of set ["Trailers","Commentaries","Deleted Scenes","Behind the Scenes",]
+        *          example: "Trailers,Deleted Scenes"
+        *        last_update:
+        *          type: string
+        *          format: date-time
+        *          description: The last update of the film
+        *          example: 2006-02-15 05:03:42
+        */
+        ...
+      ```
+
+    - `film.route.js`: 
+    
+      1. API route to get all films 
+
+          ```js
+            ...
+            /**
+              * @openapi
+              * tags:
+              *   name: Films
+              *   description: The films managing API
+              * /api/films/:
+              *   get:
+              *     tags: [Films]
+              *     summary: Returns all films
+              *     responses:
+              *       200:
+              *         description: An array of films
+              *         content:
+              *           application/json:
+              *             schema:
+              *               $ref: '#/components/schemas/Film'
+              *             example:
+              *             - film_id: 1
+              *               title: string
+              *               description: string
+              *               release_year: 2006
+              *               language_id: 1
+              *               original_language_id: 1
+              *               rental_duration: 6
+              *               rental_rate: 0.99
+              *               length: 86
+              *               replacement_cost: 20.99
+              *               special_features: "Trailers,Deleted Scenes"
+              *               rating: G
+              *               last_update: 2006-02-15 05:03:42
+              */
+            ...
+          ```
+      2. API route to get film by id 
+
+          ```js
+            ...
+            /**
+              * @openapi
+              * /api/films/{id}:
+              *   get:
+              *     tags: [Films]
+              *     summary: Returns a single film
+              *     parameters:
+              *       - name: id
+              *         description: Film's id
+              *         in: path
+              *         required: true
+              *         type: integer
+              *     responses:
+              *       200:
+              *         description: A single film
+              *         content:
+              *           application/json:
+              *             schema:
+              *               $ref: '#/components/schemas/Film'
+              *       204:
+              *         description: No content
+              */
+            ...
+          ```
+      3. API route to add a new film
+
+          ```js
+            ...
+            /**
+              * @openapi
+              * /api/films/:
+              *   post:
+              *     tags: [Films]
+              *     summary: Adds a new film
+              *     requestBody:
+              *       description: Film object
+              *       required: true
+              *       content:
+              *         application/json:
+              *           schema:
+              *             $ref: '#/components/schemas/Film'
+              *     responses:
+              *       201:
+              *         description: The created film
+              *         content:
+              *           application/json:
+              *             schema:
+              *               $ref: '#/components/schemas/Film'
+              */
+            ...
+          ```
+      4. API route to delete a film by id
+
+          ```js
+            ...
+            /**
+              * @openapi
+              * /api/films/{id}:
+              *   delete:
+              *     tags: [Films]
+              *     summary: Removes a single film
+              *     parameters:
+              *       - name: id
+              *         description: Film's id
+              *         in: path
+              *         required: true
+              *         type: integer
+              *     responses:
+              *       200:
+              *         description: Number of affected rows
+              *         content:
+              *           application/json:
+              *             schema:
+              *               type: object
+              *               properties:
+              *                 affected:
+              *                   type: integer
+              *             example:
+              *               affected: 1
+              */
+            ...
+          ```
+      5. API route to update a film by id
+
+          ```js
+            ...
+            /**
+              * @openapi
+              * /api/films/{id}:
+              *   patch:
+              *     tags: [Films]
+              *     summary: Updates a single film
+              *     parameters:
+              *       - name: id
+              *         description: Film's id
+              *         in: path
+              *         required: true
+              *         type: integer  
+              *     requestBody:
+              *       description: Film object
+              *       required: true
+              *       content:
+              *         application/json:
+              *           schema:
+              *             $ref: '#/components/schemas/Film'
+              *     responses:
+              *       200:
+              *         description: Number of affected rows
+              *         content:
+              *           application/json:
+              *             schema:
+              *               type: object
+              *               properties: 
+              *                 affected:
+              *                   type: integer  
+              *             example:
+              *               affected: 1
+              */
+            ...
+          ```
+ 2. Actor
+  
+    - `actor.schema.js`
+
+      ```js
+      /**
+        * @openapi
+        * components:
+        *   schemas:
+        *    Actor:
+        *      type: object
+        *      required:
+        *        - first_name
+        *        - last_name
+        *      properties:
+        *        actor_id:
+        *          type: integer
+        *          description: The auto-generated id of the actor
+        *          example: 1
+        *        first_name:
+        *          type: string
+        *          description: The first name of the actor
+        *          example: string 
+        *        last_name:
+        *          type: string
+        *          description: The last name of the actor
+        *          example: string
+        *        last_update:
+        *          type: string
+        *          format: date-time
+        *          description: The last update of the actor
+        *          example: 2006-02-15 05:03:42
+        */
+        ...
+      ```
+
+    - `actor.route.js`: 
+    
+      1. API route to get all actors 
+
+          ```js
+            ...
+            /**
+              * @openapi
+              * tags:
+              *   name: Actors
+              *   description: The actors managing API
+              * /api/actors/:
+              *   get:
+              *     tags: 
+              *       - Actors
+              *     summary: Returns all actors
+              *     responses:
+              *       200:
+              *         description: An array of actors
+              *         content:
+              *           application/json:
+              *             schema:
+              *               $ref: '#/components/schemas/Actor'
+              *             example:
+              *               - actor_id: 1
+              *                 first_name: string
+              *                 last_name: string
+              *                 last_update: 2006-02-15 05:03:42
+              */
+            ...
+          ```
+      2. API route to get actor by id 
+
+          ```js
+            ...
+            /**
+              * @openapi
+              * /api/actors/{id}/:
+              *   get:
+              *     tags: [Actors]
+              *     summary: Returns a single actor
+              *     parameters:
+              *       - name: id
+              *         description: Actor's id
+              *         in: path
+              *         required: true
+              *         type: integer
+              *     responses:
+              *       200:
+              *         description: A single actor
+              *         content:
+              *           application/json:
+              *             schema:
+              *               $ref: '#/components/schemas/Actor'
+              *       204:
+              *         description: No actor found
+              */
+            ...
+          ```
+
+      3. API route to add a new actor
+
+          ```js
+            ...
+            /** 
+              * @openapi
+              * /api/actors/:
+              *   post:
+              *     tags: [Actors]
+              *     summary: Create a new actor
+              *     requestBody:
+              *       description: Actor's data
+              *       required: true
+              *       content:
+              *         application/json:
+              *           schema:
+              *             $ref: '#/components/schemas/Actor'
+              *     responses:
+              *       201:
+              *         description: Created
+              *         content:
+              *           application/json:
+              *             schema:
+              *               $ref: '#/components/schemas/Actor'
+              */
+            ...
+          ```
+
+      4. API route to delete an actor by id
+
+          ```js
+            ...
+            /**
+              * @openapi
+              * /api/actors/{id}/:
+              *   delete:
+              *     tags: [Actors]
+              *     summary: Remove a single actor
+              *     parameters:
+              *       - name: id
+              *         description: Actor's id
+              *         in: path
+              *         required: true
+              *         type: integer
+              *     responses:
+              *       200:
+              *         description: Number of affected rows
+              *         content:
+              *           application/json:
+              *             schema:
+              *               $ref: '#/components/schemas/Actor'
+              *         example:
+              *           affected: 1
+              *       204:
+              *         description: No actor found
+              */
+            ...
+          ```
+
+      5. API route to update an actor by id
+
+          ```js
+            ...
+            /**
+              * @openapi
+              * /api/actors/{id}/:
+              *   patch:
+              *     tags: [Actors]
+              *     summary: Updates a single actor
+              *     parameters:
+              *       - name: id
+              *         description: Actor's id
+              *         in: path
+              *         required: true
+              *         type: integer
+              *     requestBody:
+              *       description: Actor object
+              *       required: true
+              *       content:
+              *         application/json:
+              *           schema:
+              *             $ref: '#/components/schemas/Actor'
+              *     responses:
+              *       200:
+              *         description: A single actor
+              *         content:
+              *           application/json:
+              *             schema:
+              *               $ref: '#/components/schemas/Actor'
+              *       204:
+              *         description: No actor found
+              */
+            ...
+          ```
+
+Now, we can visit the url `/api-docs` we specified in the previous section at ()!
+[http://localhost:3000/api-docs](http://localhost:3000/api-docs) to test out the API endpoints.
+
+![Swagger UI](/hw/w2/assets/images/api_docs_swagger_ui.png "Swagger UI")
+
+### Import Swagger APIs into Postman
+
+1. Visit the url `/docs.json` we specified in the previous section at ()!
+[http://localhost:3000/docs.json](http://localhost:3000/docs.json) and copy the raw Swagger documentation JSON.
+
+![Swagger documentation JSON](/hw/w2/assets/images/docs_json.png "Swagger documentation JSON")
+
+2. Open `Postman` and click on the `Import` button.
+
+![Postman import button](/hw/w2/assets/images/postman_import_button.png "Postman import button")
+
+3. Paste the URL from step 1 and follow the default process. After the imported successfully, you will get the collection of our Sakila API as below: 
+
+![Postman Imported Collection](/hw/w2/assets/images/postman_imported_collection.png "Postman Imported Collection")
+
 ## Video
 
 

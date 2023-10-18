@@ -12,7 +12,8 @@ const router = express.Router();
  *   description: The actors managing API
  * /api/actors/:
  *   get:
- *     tags: [Actors]
+ *     tags: 
+ *       - Actors
  *     summary: Returns all actors
  *     responses:
  *       200:
@@ -21,6 +22,11 @@ const router = express.Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Actor'
+ *             example:
+ *               - actor_id: 1
+ *                 first_name: string
+ *                 last_name: string
+ *                 last_update: 2006-02-15 05:03:42
  */
 router.get("/", async function (req, res) {
   const list = await actorModel.findAll();
@@ -31,7 +37,8 @@ router.get("/", async function (req, res) {
  * @openapi
  * /api/actors/{id}/:
  *   get:
- *     tags: [Actors]
+ *     tags: 
+ *       - Actors
  *     summary: Returns a single actor
  *     parameters:
  *       - name: id
@@ -63,7 +70,8 @@ router.get("/:id", async function (req, res) {
  * @openapi
  * /api/actors/:
  *   post:
- *     tags: [Actors]
+ *     tags: 
+ *       - Actors
  *     summary: Create a new actor
  *     requestBody:
  *       description: Actor's data
@@ -91,7 +99,8 @@ router.post("/", validate(schema), async function (req, res) {
  * @openapi
  * /api/actors/{id}/:
  *   delete:
- *     tags: [Actors]
+ *     tags: 
+ *       - Actors
  *     summary: Remove a single actor
  *     parameters:
  *       - name: id
@@ -123,7 +132,8 @@ router.delete("/:id", async function (req, res) {
  * @openapi
  * /api/actors/{id}/:
  *   patch:
- *     tags: [Actors]
+ *     tags: 
+ *       - Actors
  *     summary: Updates a single actor
  *     parameters:
  *       - name: id

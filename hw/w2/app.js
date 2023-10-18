@@ -20,6 +20,7 @@ app.use("/api/categories", categoryRouter);
 app.use("/api/films", filmRouter);
 app.use("/api/actors", actorRouter);
 
+// Serve swagger docs
 swagger(app);
 
 app.post("/", function (req, res) {

@@ -10,7 +10,8 @@ const router = express.Router();
  *  description: The categories managing API
  * /api/categories/:
  *  get:
- *   tags: [Categories]
+ *   tags:
+ *     - Categories
  *   summary: Returns all categories
  *   responses:
  *    200:
@@ -33,7 +34,8 @@ router.get('/', async function (req, res) {
  * @openapi
  * /api/categories/{id}:
  *  get:
- *   tags: [Categories]
+ *   tags:
+ *     - Categories
  *   summary: Returns a single category
  *   parameters:
  *    - name: id
@@ -67,7 +69,8 @@ router.get('/:id', async function (req, res) {
  * @openapi
  * /api/categories/:
  *  post:
- *   tags: [Categories]
+ *   tags:
+ *     - Categories
  *   summary: Create a new category
  *   requestBody:
  *    description: Category object
@@ -99,7 +102,8 @@ router.post('/', async function (req, res) {
  * @openapi
  * /api/categories/{id}:
  *  delete:
- *   tags: [Categories]
+ *   tags:
+ *     - Categories
  *   summary: Remove a single category
  *   parameters:
  *    - name: id
@@ -130,7 +134,8 @@ router.delete('/:id', async function (req, res) {
  * @openapi
  * /api/categories/{id}:
  *  patch:
- *   tags: [Categories]
+ *   tags:
+ *     - Categories
  *   summary: Updates a single category
  *   parameters:
  *    - name: id
