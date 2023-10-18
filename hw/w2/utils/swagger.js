@@ -28,7 +28,6 @@ export default (app) => {
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
   app.get("/docs.json", (req, res) => {
-    res.setHeader("Content-Type", "application/json");
-    res.send(swaggerSpecs);
+    res.json(swaggerSpecs);
   });
 };
