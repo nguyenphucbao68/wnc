@@ -1121,14 +1121,14 @@ Now we will update the `schemas` and `routes` of `film`, `actor`, and `category`
             ...
           ```
 
-Now, we can visit the url `/api-docs` we specified in the previous section at ()!
+Now, we can visit the url `/api-docs` we specified in the previous section at
 [http://localhost:3000/api-docs](http://localhost:3000/api-docs) to test out the API endpoints.
 
 ![Swagger UI](/hw/w2/assets/images/api_docs_swagger_ui.png "Swagger UI")
 
 ### Import Swagger APIs into Postman
 
-1. Visit the url `/docs.json` we specified in the previous section at ()!
+1. Visit the url `/docs.json` we specified in the previous section at
 [http://localhost:3000/docs.json](http://localhost:3000/docs.json) and copy the raw Swagger documentation JSON.
 
 ![Swagger documentation JSON](/hw/w2/assets/images/docs_json.png "Swagger documentation JSON")
