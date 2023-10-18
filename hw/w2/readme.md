@@ -1142,5 +1142,4 @@ Now, we can visit the url `/api-docs` we specified in the previous section at
 ![Postman Imported Collection](/hw/w2/assets/images/postman_imported_collection.png "Postman Imported Collection")
 
 ## Video
-
-
+[[Group03 - CSC13114_20KTPM1 - Web nâng cao] Preparation-for-LN03 - API Validation, API Docs](https://youtu.be/zPeanYsoS4A)
