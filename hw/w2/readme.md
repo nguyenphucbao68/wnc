@@ -518,7 +518,7 @@ Explain the above code: Below are the steps that the above JSON schema is create
         };
       }
      ```
-    - Fourthly, we will import this validate in file `film.route.js` for method `POST` and `PATCH` (which passed in body request):
+    - Next, we will import this validate in file `film.route.js` for method `POST` and `PATCH` (which passed in body request):
         ```js
          ...
           import validate from "../middlewares/validate.middleware.js";
