@@ -14,7 +14,7 @@
  *        name:
  *          type: string
  *          description: The first name of the category
- *          example: Action 
+ *          example: string 
  *        last_update:
  *          type: string
  *          format: date-time

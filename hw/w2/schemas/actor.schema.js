@@ -15,11 +15,11 @@
  *        first_name:
  *          type: string
  *          description: The first name of the actor
- *          example: Quang 
+ *          example: string 
  *        last_name:
  *          type: string
  *          description: The last name of the actor
- *          example: Khanh
+ *          example: string
  *        last_update:
  *          type: string
  *          format: date-time

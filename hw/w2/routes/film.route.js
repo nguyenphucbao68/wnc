@@ -60,20 +60,6 @@ router.get("/", async function (req, res) {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Film'
- *             example:
- *               film_id: 1
- *               title: string
- *               description: string
- *               release_year: 2006
- *               language_id: 1
- *               original_language_id: 1
- *               rental_duration: 6
- *               rental_rate: 0.99
- *               length: 86
- *               replacement_cost: 20.99
- *               rating: G
- *               special_features: "Trailers,Deleted Scenes"
- *               last_update: 2006-02-15 05:03:42
  *       204:
  *         description: No content
  */
@@ -107,20 +93,6 @@ router.get("/:id", async function (req, res) {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Film'
- *             example:
- *               film_id: 1
- *               title: string
- *               description: string
- *               release_year: 2006
- *               language_id: 1
- *               original_language_id: 1
- *               rental_duration: 6
- *               rental_rate: 0.99
- *               length: 86
- *               replacement_cost: 20.99
- *               rating: G
- *               special_features: "Trailers,Deleted Scenes"
- *               last_update: 2006-02-15 05:03:42
  */
 router.post("/", validate(schema), async function (req, res) {
   let film = req.body;

@@ -15,11 +15,11 @@
  *        title:
  *          type: string
  *          description: The title of the film
- *          example: ACADEMY DINOSAUR
+ *          example: string
  *        description:
  *          type: string
  *          description: The description of the film
- *          example: A Epic Drama of a Feminist And a Mad Scientist who must Battle a Teacher in The Canadian Rockies
+ *          example: string
  *        release_year:
  *          type: integer
  *          description: The release year of the film

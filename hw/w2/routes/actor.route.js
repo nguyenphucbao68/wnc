@@ -21,11 +21,6 @@ const router = express.Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Actor'
- *             example:
- *               actor_id: 1
- *               first_name: string
- *               last_name: string
- *               last_update: 2006-02-15 05:03:42
  */
 router.get("/", async function (req, res) {
   const list = await actorModel.findAll();
@@ -51,11 +46,6 @@ router.get("/", async function (req, res) {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Actor'
- *             example:
- *               actor_id: 1
- *               first_name: string
- *               last_name: string
- *               last_update: 2006-02-15 05:03:42
  *       204:
  *         description: No actor found
  */
@@ -89,11 +79,6 @@ router.get("/:id", async function (req, res) {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Actor'
- *             example:
- *               actor_id: 1
- *               first_name: string
- *               last_name: string
- *               last_update: 2006-02-15 05:03:42
  */
 router.post("/", validate(schema), async function (req, res) {
   const entity = req.body;
@@ -160,11 +145,6 @@ router.delete("/:id", async function (req, res) {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Actor'
- *             example:
- *               actor_id: 1
- *               first_name: string
- *               last_name: string
- *               last_update: 2006-02-15 05:03:42
  *       204:
  *         description: No actor found
  */

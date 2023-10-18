@@ -76,10 +76,6 @@ router.get('/:id', async function (req, res) {
  *     application/json:
  *      schema:
  *       $ref: '#/components/schemas/Category'
- *      example: 
- *       category_id: 1
- *       name: string
- *       last_updated: 2006-02-15 05:03:42
  *   responses:
  *    200:
  *     description: An array of categories
@@ -87,10 +83,6 @@ router.get('/:id', async function (req, res) {
  *      application/json:
  *       schema:
  *        $ref: '#/components/schemas/Category'
- *       example:
- *        category_id: 1
- *        name: string
- *        last_update: 2006-02-15 05:03:42
  */
 router.post('/', async function (req, res) {
   let category = req.body;
@@ -153,10 +145,6 @@ router.delete('/:id', async function (req, res) {
  *     application/json:
  *      schema:
  *       $ref: '#/components/schemas/Category'
- *      example: 
- *       category_id: 1
- *       name: string
- *       last_updated: 2006-02-15 05:03:42
  *   responses:
  *    200:
  *     description: Number of affected rows

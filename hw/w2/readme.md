@@ -18,12 +18,12 @@
   - `morgan`: An Express middleware for HTTP request logging.
   - `ajv`: JavaScript JSON Schema validator for data validation.
   - `ajv-formats`: An extension for Ajv to support more JSON schema formats.
-  - `swagger-jsdoc`: Generates OpenAPI documentation from JSDoc comments.
+  - `swagger-jsdoc`: This library reads your JSDoc-annotated source code and generates an OpenAPI (Swagger) specification.
   - `swagger-ui-express`: An Express middleware for serving Swagger UI to explore API documentation.
 
 ## Steps
 
-### Updating Project from Week 1: LN02 - RESTful API
+### Updating Project from Week 2: LN02 - RESTful API
 
 For this tutorial, we will focus on API validation and API Docs based on the code to build a RESTful API from the previous week.
 
