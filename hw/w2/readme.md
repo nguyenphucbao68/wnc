@@ -376,38 +376,6 @@ Explain the above code: Below are the steps that the above JSON schema is create
               }
             }
         ```
-     - `rating`: In mysql structure `rating` has type `enum('G', 'PG', 'PG-13', 'R', 'NC-17')` and can be `NULL`. Therefore, we can define `rating` with type: `string`, enum: `["G", "PG", "PG-13", "R", "NC-17"]` and nullable: `true` as below:
-
-        ```js
-            const schema = {
-              type: "object",
-              properties: {
-                film_id: {
-                  type: "integer",
-                  minimum: 0,
-                },
-                title: { type: "string", maxLength: 255 },
-                description: { type: "string", nullable: true },
-                release_year: {
-                  type: "integer",
-                  minimum: 1901,
-                  maximum: 2155,
-                  nullable: true,
-                },
-                language_id: { type: "integer", minimum: 0 },
-                original_language_id: { type: "integer", minimum: 0, nullable: true },
-                rental_duration: { type: "integer", minimum: 0 },
-                rental_rate: { type: "number" },
-                length: { type: "integer", minimum: 0, nullable: true },
-                replacement_cost: { type: "number" },
-                rating: {
-                  type: "string",
-                  enum: ["G", "PG", "PG-13", "R", "NC-17"],
-                  nullable: true,
-                },
-              }
-            }
-        ```
      - `special_features`: In mysql structure `special_features` has type `set('Trailers','Commentaries','Deleted Scenes','Behind the Scenes')` and can be `NULL`. Therefore, we can define `special_features` with type: `string`, nullable: `true`, specialFeatureSet: `true` (We will explain this keyword in the next step) as below:
 
         ```js
@@ -584,7 +552,7 @@ Explain the above code: Below are the steps that the above JSON schema is create
 
 This is the end of tutorial for API Validating with `Ajv`.
 
-Next, we come to section 2: API Documentation with `Swagger`
+Next, we come to the second topic : API Documentation with `Swagger`
 
 ### Setup Project Template for API Documentation
 
