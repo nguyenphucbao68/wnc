@@ -18,6 +18,7 @@
   - `morgan`: An Express middleware for HTTP request logging.
   - `ajv`: JavaScript JSON Schema validator for data validation.
   - `ajv-formats`: An extension for Ajv to support more JSON schema formats.
+  - `ajv-errors`: Allow custom error messages in JSON-Schema for Ajv validator.
   - `swagger-jsdoc`: This library reads your JSDoc-annotated source code and generates an OpenAPI (Swagger) specification.
   - `swagger-ui-express`: An Express middleware for serving Swagger UI to explore API documentation.
 
@@ -38,7 +39,7 @@ $ yarn
 
 Now, let's install 2 more dependencies are `ajv` which used for JSON schema validation and `ajv-formats` which adding support for additional data formats validation based on regular expressions as below: 
 ```console
-$ yarn add ajv ajv-formats
+$ yarn add ajv ajv-formats ajv-errors
 ```
 
 Our package.json file will look like below:
@@ -60,6 +61,7 @@ Our package.json file will look like below:
   "license": "ISC",
   "dependencies": {
     "ajv": "^8.12.0",
+    "ajv-errors": "^3.0.0",
     "ajv-formats": "^2.1.1",
     "express": "^4.17.3",
     "knex": "^1.0.3",
@@ -79,6 +81,10 @@ const schema = {
     film_id: {
       type: "integer",
       minimum: 0,
+      errorMessage: {
+        type: "Film's id is not an integer",
+        minimum: "Film's id has to >= 0",
+      },
     },
     title: { type: "string", maxLength: 255 },
     description: { type: "string", nullable: true },
@@ -134,7 +140,7 @@ Explain the above code: Below are the steps that the above JSON schema is create
       ```
    - Secondly, we define the key properties for each columns:
      
-     - `film_id`: In mysql structure `film_id` has type `smallint(5)`, attribute `UNSIGNED` and `AUTO_INCREMENT`. Therefore, we can define `film_id` with type: `integer` and minimum: 0 as below:
+     - `film_id`: In mysql structure `film_id` has type `smallint(5)`, attribute `UNSIGNED` and `AUTO_INCREMENT`. Therefore, we can define `film_id` with type: `integer` and minimum: 0. Moreover, we can custom error message for each attributes with `ajv-errors` as below:
         ```js
           const schema = {
             type: "object",
@@ -142,6 +148,10 @@ Explain the above code: Below are the steps that the above JSON schema is create
               film_id: {
                 type: "integer",
                 minimum: 0,
+                errorMessage: {
+                  type: "Film's id is not an integer",
+                  minimum: "Film's id has to >= 0",
+                },
               },
             }
           }
@@ -503,9 +513,23 @@ Explain the above code: Below are the steps that the above JSON schema is create
                 .map((feature) => feature.trim());
 
               // Check if all elements in the array are unique and are in the predefined set
-              return specialFeatures.every((feature) =>
+              const result = specialFeatures.every((feature) =>
                 validSpecialFeatures.has(feature)
               );
+              
+              // Custom keyword for keyword specialFeatureSet whenever result is false
+              if (!result) {
+                validate.errors = [
+                  {
+                    keyword: "specialFeatureSet",
+                    message:
+                      "CSV string must be in SET('Trailers,Commentaries,Deleted Scenes,Behind the Scenes')",
+                  },
+                ];
+                return false;
+              }
+
+              return true;
             },
           });
 

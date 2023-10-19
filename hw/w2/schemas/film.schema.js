@@ -68,6 +68,10 @@ const schema = {
     film_id: {
       type: "integer",
       minimum: 0,
+      errorMessage: {
+        type: "Film's id is not an integer",
+        minimum: "Film's id has to >= 0",
+      },
     },
     title: { type: "string", maxLength: 255 },
     description: { type: "string", nullable: true },
