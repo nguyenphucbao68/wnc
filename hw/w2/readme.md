@@ -1238,14 +1238,14 @@ A file with name `swagger_output.json` will be created at the root directory as 
 {
   "swagger": "2.0",
   "info": {
-    "title": "Sakila API Documentation",
     "version": "1.0.0",
-    "description": "Documentation for Sakila API"
+    "title": "REST API",
+    "description": ""
   },
-  "servers": [
-    {
-      "url": "http://localhost:3000/"
-    }
+  "host": "localhost:3000",
+  "basePath": "/",
+  "schemes": [
+    "http"
   ],
   "paths": {
     "/": {
