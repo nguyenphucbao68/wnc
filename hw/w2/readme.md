@@ -20,6 +20,7 @@
   - `ajv-formats`: An extension for Ajv to support more JSON schema formats.
   - `ajv-errors`: Allow custom error messages in JSON-Schema for Ajv validator.
   - `swagger-jsdoc`: This library reads your JSDoc-annotated source code and generates an OpenAPI (Swagger) specification.
+  - `swagger-autogen`: Automates Swagger documentation for APIs by recognizing endpoints, methods, and more from code comments, generating a Swagger JSON file.
   - `swagger-ui-express`: An Express middleware for serving Swagger UI to explore API documentation.
 
 ## Steps
@@ -586,11 +587,11 @@ This is the end of tutorial for API Validating with `Ajv`.
 
 Next, we come to the second topic : API Documentation with `Swagger`
 
-### Setup Project Template for API Documentation
+### First Approach: Setup Project Template for API Documentation From JSDoc comments
 
-Now, let's install 2 more dependencies are `swagger-jsdoc` which used for generates OpenAPI documentation from JSDoc comments. and `swagger-ui-express` which serving Swagger UI to explore API documentation as below: 
+Now, let's install 2 more dependencies are `swagger-jsdoc` which used for generates OpenAPI documentation from JSDoc comments, `swagger-ui-express` which serving Swagger UI to explore API documentation as below: 
 ```console
-$ yarn add swagger-jsdoc swagger-ui-express
+$ yarn add swagger-jsdoc swagger-ui-express swagger-autogen
 ```
 
 Our package.json file will look like below:
@@ -1149,6 +1150,397 @@ Now, we can visit the url `/api-docs` we specified in the previous section at
 [http://localhost:3000/api-docs](http://localhost:3000/api-docs) to test out the API endpoints.
 
 ![Swagger UI](/hw/w2/assets/images/api_docs_swagger_ui.png "Swagger UI")
+
+### Second Approach: Setup Project Template for API Documentation From auto-generated JSDoc by module `swagger-autogen`
+
+As an alternative to manually writing JSDoc comments, the second approach automates API documentation using the `swagger-autogen` module. This approach streamlines the process and reduces the need for manual documentation.
+<br><br>Now we need to add module `swagger-autogen` into our `package.json` file by enter the below command:
+
+```console
+$ yarn add swagger-autogen
+```
+
+Our package.json file will look like below:
+
+```json
+{
+  "type": "module",
+  "name": "sakilaapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "swagger-autogen": "node swagger_autogen.js",
+    "start": "node app",
+    "dev": "nodemon app"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ajv": "^8.12.0",
+    "ajv-errors": "^3.0.0",
+    "ajv-formats": "^2.1.1",
+    "express": "^4.17.3",
+    "knex": "^1.0.3",
+    "morgan": "^1.10.0",
+    "mysql": "^2.18.1",
+    "swagger-autogen": "^2.23.6",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
+```
+
+Now, we need to create a file to use function `swaggerAutogen` provided by module `swagger-autogen` to write JSDoc to output file.
+
+```js
+import swaggerAutogen from "swagger-autogen";
+
+// Specify the path to the JSON file where the Swagger documentation will be generated.
+const outputFile = "./swagger_output.json";
+
+// Specify an array of files that contain the endpoint definitions/routes want to document.
+const endpointsFiles = ["./app.js"];
+
+// Use 'swagger-autogen' to generate Swagger documentation. This function will take the
+// 'outputFile' as the target location for the generated documentation and 'endpointsFiles'
+// as an array of files that contain the API endpoint definitions want to document.
+swaggerAutogen(outputFile, endpointsFiles);
+```
+
+Next, we just have to enter this command to write down automated JSDoc to output file `swagger_output.json` :
+
+```console
+$ node swagger_autogen.js
+```
+
+A file with name `swagger_output.json` will be created at the root directory as below:
+
+```json
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Sakila API Documentation",
+    "version": "1.0.0",
+    "description": "Documentation for Sakila API"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/err": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/categories/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/api/categories/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "204": {
+            "description": "No Content"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/films/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/films/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "204": {
+            "description": "No Content"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/actors/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "actor_id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/actors/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "204": {
+            "description": "No Content"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+Finally, we need to adjust `swagger.js` file to read above json file in `type: "module"`:
+
+```js
+...
+import { readFile } from "fs/promises";
+
+// Parse the 'swagger_output.json' file
+const swaggerFile = JSON.parse(
+  await readFile(new URL("../swagger_output.json", import.meta.url))
+);
+...
+```
+
+```js
+...
+// Export swagger
+export default (app) => {
+  // Second approach: Serve swagger docs auto-generated by swagger-autogen
+  app.use("/autogen-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
+
+  // Serve swagger specs as JSON endpoint
+  app.get("/docs.json", (req, res) => {
+    res.json(swaggerFile);
+  });
+};
+```
+
+Now, we can visit the url `/autogen-docs` we specified in the previous section at
+[http://localhost:3000/autogen-docs](http://localhost:3000/autogen-docs) to test out the API endpoints.
+
+![Swagger UI](/hw/w2/assets/images/autogen_docs.png "Swagger UI")
+
+In summary, `swagger-jsdoc` relies on JSDoc comments in your code to annotate and document API routes. It requires manual comment annotations for each route, allowing you to precisely define request and response information. This manual approach provides fine-grained control and flexibility but can be time-consuming for larger APIs.
+
+On the other hand, `swagger-autogen` automatically generates Swagger documentation by inspecting your Express routes, identifying endpoints, HTTP methods, and parameters. It reduces the need for manual documentation and is suitable for quickly setting up documentation. While it may lack the granular control of Swagger-JSDoc, it offers a convenient way to get started with documentation, especially for smaller or rapidly evolving projects.
 
 ### Import Swagger APIs into Postman
 

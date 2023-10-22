@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "swagger-autogen": "node swagger_autogen.js",
     "start": "node app",
     "dev": "nodemon app"
   },
@@ -20,6 +21,7 @@
     "knex": "^1.0.3",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
+    "swagger-autogen": "^2.23.6",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0"
   },
