@@ -1,5 +1,18 @@
 # Preparation-for-LN03 - API Validation, API Docs
 
+## Table of contents:
+- [Preparation-for-LN03 - API Validation, API Docs](#preparation-for-ln03---api-validation-api-docs)
+  - [Table of contents:](#table-of-contents)
+  - [Requirements](#requirements)
+  - [Dependencies:](#dependencies)
+  - [Steps](#steps)
+    - [Updating Project from Week 2: LN02 - RESTful API](#updating-project-from-week-2-ln02---restful-api)
+    - [Setup Project Template for API Validation](#setup-project-template-for-api-validation)
+    - [First Approach: Setup Project Template for API Documentation From JSDoc comments](#first-approach-setup-project-template-for-api-documentation-from-jsdoc-comments)
+    - [Second Approach: Setup Project Template for API Documentation From auto-generated JSDoc by module `swagger-autogen`](#second-approach-setup-project-template-for-api-documentation-from-auto-generated-jsdoc-by-module-swagger-autogen)
+    - [Import Swagger APIs into Postman](#import-swagger-apis-into-postman)
+  - [Video](#video)
+
 ## Requirements
 
 1. Validate client parameters
