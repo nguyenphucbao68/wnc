@@ -1196,7 +1196,7 @@ Our package.json file will look like below:
 }
 ```
 
-Now, we need to create a file to use function `swaggerAutogen` provided by module `swagger-autogen` to write JSDoc to output file.
+Now, we need to create a js file `swagger_autogen.js` to execute function `swaggerAutogen` provided by module `swagger-autogen` to write JSDoc to output file.
 
 ```js
 import swaggerAutogen from "swagger-autogen";
