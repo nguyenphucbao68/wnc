@@ -1572,5 +1572,5 @@ On the other hand, `swagger-autogen` automatically generates Swagger documentati
 
 ## Video
 - Part 1 - API Validation and first approach of API Documentation with swagger-jsdoc: [[Group03 - CSC13114_20KTPM1 - Web nâng cao] Preparation-for-LN03 - API Validation, API Docs](https://youtu.be/zPeanYsoS4A)
-- Part 2: Second approach of API Documentation with swagger-autogen:  [[Group03 - CSC13114_20KTPM1 - Web nâng cao] Preparation-for-LN03 - API Validation, API Docs](https://youtu.be/djhWkuNRCTI)
+- Part 2: Second approach of API Documentation with swagger-autogen:  [[Group03 - CSC13114_20KTPM1 - Web nâng cao] Part2: API Documentation with swagger-autogen](https://youtu.be/djhWkuNRCTI)
 
