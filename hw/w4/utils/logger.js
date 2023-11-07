@@ -33,9 +33,9 @@ const logger = createLogger({
     new transports.Console({
       level: "info",
     }),
-    // new transports.File({
-    //   filename: './log/logToFile.txt'
-    // }),
+    new transports.File({
+      filename: './log/application-06.log'
+    }),
     rotateTransport
     //papertrail
   ]
