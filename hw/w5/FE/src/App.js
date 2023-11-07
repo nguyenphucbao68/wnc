@@ -153,6 +153,7 @@ const App = () => {
                       localStorage.removeItem('token');
                       localStorage.removeItem('isLogin');
                       setIsLogin(false);
+                      window.location.reload();
                     }}
                   >
                     Logout
