@@ -4,7 +4,7 @@ import cors from 'cors';
 import categoryRouter from './routes/category.route.js';
 import filmRouter from './routes/film.route.js';
 import actorRouter from './routes/actor.route.js';
-import authRouter from './routes/auth.js';
+import authRouter from './routes/auth.route.js';
 
 import dotenv from 'dotenv';
 dotenv.config();
