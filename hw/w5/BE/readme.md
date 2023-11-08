@@ -3,7 +3,7 @@
 1. Nodejs
 2. NPM
 3. MySQL: using XAMPP (https://www.apachefriends.org/download.html)
-4. Library: Express, Knex, Mysql, Dotenv, Jwt, Bcryptjs, cors
+4. Library: Express, Knex, Mysql, Dotenv, Jwt, cors
 
 ## Steps
 
@@ -12,11 +12,10 @@
 1. Setup Library
 
   - Jwt: `yarn add jsonwebtoken`
-  - Bcryptjs: `yarn add bcryptjs`
   - Cors: `yarn add cors`
   - Dotenv: `yarn add dotenv`
 
-2. Create .env file and use dotenv
+2. Create .env file and use dotenv and cors
 
   - .env file
 
@@ -29,8 +28,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 ```
-
-  - Use cors
 
 ```js
 import cors from 'cors';
@@ -46,7 +43,6 @@ app.use(cors());
 ```js
 import express, { Router } from 'express';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
 
 const router = Router();
 
