@@ -30,7 +30,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 ```
 
-1. Use cors
+  - Use cors
 
 ```js
 import cors from 'cors';
@@ -124,6 +124,4 @@ router.get('/', verifyToken, async function (req, res) {
 
 ```
 
-## Video
 
-https://drive.google.com/file/d/11h2LUiConChdjqv0VkZTQVCvydhEGsYz/view?usp=sharing
