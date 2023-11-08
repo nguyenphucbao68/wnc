@@ -18,25 +18,25 @@
 
 2. Create .env file and use dotenv
 
-   - .env file
+  - .env file
 
-   ```env
-    JWT_SECRET=mysecretkey
-    ```
-    - app.js
-  
-      ```js
-      import dotenv from 'dotenv';
+```env
+JWT_SECRET=mysecretkey
+```
+  - app.js
+```js
+import dotenv from 'dotenv';
 
-      dotenv.config();
-      ```
-3. Use cors
+dotenv.config();
+```
 
-   ```js
-   import cors from 'cors';
+1. Use cors
 
-   app.use(cors());
-   ```
+```js
+import cors from 'cors';
+
+app.use(cors());
+```
 
 ### Create and use authentication API
 
