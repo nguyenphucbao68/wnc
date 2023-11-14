@@ -15,6 +15,10 @@ export default function (table_name, id_field) {
       return list[0];
     },
 
+    findByUsername(username) {
+      return db(table_name).where('username', username).first();
+    },
+
     add(entity) {
       return db(table_name).insert(entity);
     },
@@ -28,3 +32,4 @@ export default function (table_name, id_field) {
     },
   };
 }
+
