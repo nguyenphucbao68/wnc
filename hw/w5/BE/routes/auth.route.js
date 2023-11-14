@@ -1,7 +1,7 @@
 import express, { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import { registerValidator } from './../validations/auth.js';
+import { registerValidator } from '../validations/auth.js';
 
 const router = Router();
 

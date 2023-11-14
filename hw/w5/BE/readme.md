@@ -3,251 +3,121 @@
 1. Nodejs
 2. NPM
 3. MySQL: using XAMPP (https://www.apachefriends.org/download.html)
-4. Library: Express, Knex, Mysql
+4. Library: Express, Knex, Mysql, Dotenv, Jwt, cors
 
 ## Steps
 
 ### Setup Environment
 
-1. Setup Database (XAMPP - MySQL)
+1. Setup Library
 
-   - Link Download: https://www.apachefriends.org/download.html
-   - **Start Server**: Manage Servers Tab -> Enable MYSQL Database + Apache Web Server (to use phpmyadmin)
+  - Jwt: `yarn add jsonwebtoken`
+  - Cors: `yarn add cors`
+  - Dotenv: `yarn add dotenv`
 
-2. Setup Nodejs
+2. Create .env file and use dotenv and cors
 
-   - Link Download: https://nodejs.org/en/download/
-   - **Check Version**: `node -v`
+  - .env file
 
-3. Setup NPM + Yarn
+```env
+JWT_SECRET=mysecretkey
+```
+  - app.js
+```js
+import dotenv from 'dotenv';
 
-   - Link Download: https://www.npmjs.com/get-npm
-   - **Check Version**: `npm -v`
-   - **Install Yarn**: `npm install -g yarn`
-   - **Check Version**: `yarn -v`
+dotenv.config();
+```
 
-### Import Database in phpmyadmin
+```js
+import cors from 'cors';
 
-1.  Download https://drive.google.com/file/d/1xkaolV5jiKbnfe35_0_bXmcsPD9OjvDH/view
-2.  Enter phpmyadmin: http://localhost/phpmyadmin/
-3.  Create new database: "**wnc**" with `_utf8mb4_general_ci_`
-4.  Enter database **"wnc" -> Import -> Choose file -> Choose your file -> Go**
+app.use(cors());
+```
 
-### Setup Project Template
+### Create and use authentication API
 
-1. Package.json
+1. Create Login API
+  - /routes/auth.route.js
 
-Using `npm init` or `yarn init` to create package.json
+```js
+import express, { Router } from 'express';
+import jwt from 'jsonwebtoken';
 
-Then add `"type": "module"` to package.json to use ES6 module
+const router = Router();
 
-Intall dependencies: `yarn add express mysql knex`
+router.post('/login', async function (req, res, next) {
+  try {
+    const { email, password } = req.body;
+    const user = {
+      email,
+      password,
+    };
 
-Install dev dependencies: `yarn add -D nodemon`
+    const token = jwt.sign(user, process.env.JWT_SECRET, {
+      expiresIn: '1h',
+    });
 
-```json
-{
-  "type": "module",
-  "name": "sakilaapi",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app",
-    "dev": "nodemon app"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^4.17.3",
-    "knex": "^1.0.3",
-    "mysql": "^2.18.1"
+    res.status(200).json({
+      msg: 'User logged in',
+      token,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+export default router;
+```
+
+2. Use Login API
+  - /app.js
+
+```js
+import authRouter from './routes/auth.route.js';
+
+app.use('/auth', authRouter);
+```
+
+### Create Verify Token Middleware and use it in API
+1. Create Verify Token Middleware
+  - /middlewares/verifyToken.js
+
+```js
+import jwt from 'jsonwebtoken';
+
+export default function verifyToken(req, res, next) {
+  const token = req.headers['authorization'];
+
+  if (!token) {
+    return res.status(401).json({
+      error: 'Unauthorized',
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({
+      error: 'Unauthorized',
+    });
   }
 }
 ```
 
-1. app.js
-
-- initialize app
-
-```js
-import express from 'express';
-
-const app = express();
-app.use(express.json());
-
-app.get('/', function (req, res) {
-  res.json({
-    msg: 'hello from expressjs',
-  });
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, function () {
-  console.log(`Sakila API is listening at http://localhost:${PORT}`);
-});
-```
-
-- error handling
+2. Use Verify Token Middleware
+  - /routes/actor.route.js
 
 ```js
-...
-app.get('/err', function (req, res) {
-  throw new Error('Error!');
-});
+import verifyToken from '../middlewares/verifyToken.js';
 
-app.use(function (req, res) {
-  res.status(404).json({
-    error: 'Endpoint not found.',
-  });
-});
-
-app.use(function (err, req, res, next) {
-  console.log(err.stack);
-  res.status(500).json({
-    error: 'Something wrong!',
-  });
-});
-...
-```
-
-- Initialize DB
-
-```js (utils/db.js)
-import knex from 'knex';
-
-export default knex({
-  client: 'mysql',
-  connection: {
-    host: '127.0.0.1',
-    port: 3306,
-    user: 'root',
-    password: '1234566',
-    database: 'wnc',
-  },
-  pool: { min: 0, max: 10 },
-});
-```
-
-### Add CRUD API - actor
-
-1. Model
-
-generic.model.js
-
-```js
-import db from '../utils/db.js';
-
-export default function (table_name, id_field) {
-  return {
-    findAll() {
-      return db(table_name);
-    },
-
-    async findById(id) {
-      const list = await db(table_name).where(id_field, id);
-      if (list.length === 0) {
-        return null;
-      }
-
-      return list[0];
-    },
-
-    add(entity) {
-      return db(table_name).insert(entity);
-    },
-
-    del(id) {
-      return db(table_name).where(id_field, id).del();
-    },
-
-    patch(id, entity) {
-      return db(table_name).where(id_field, id).update(entity);
-    },
-  };
-}
-```
-
-actor.model.js
-
-```js
-import generate from './generic.model.js';
-
-export default generate('actor', 'actor_id');
-```
-
-2. Routes
-
-- initialize Routers
-
-```js
-import express from 'express';
-import actorModel from '../models/actor.model.js';
-
-const router = express.Router();
-```
-
-- List all actors
-
-```js
-router.get('/', async function (req, res) {
+router.get('/', verifyToken, async function (req, res) {
   const list = await actorModel.findAll();
   res.json(list);
 });
+
 ```
 
-- Get actor by id
 
-```js
-router.get('/:id', async function (req, res) {
-  const id = req.params.id || 0;
-  const actor = await actorModel.findById(id);
-  if (actor === null) {
-    return res.status(204).end();
-  }
-
-  res.json(actor);
-});
-```
-
-- Add new actor
-
-```js
-router.post('/', async function (req, res) {
-  const entity = req.body;
-  const ids = await actorModel.add(entity);
-  entity.actor_id = ids[0];
-  res.status(201).json(entity);
-});
-```
-
-- Delete an actor
-
-```js
-router.delete('/:id', async function (req, res) {
-  const id = req.params.id || 0;
-  const n = await actorModel.del(id);
-  res.json({
-    affected: n,
-  });
-});
-```
-
-- Update an actor
-
-```js
-router.patch('/:id', async function (req, res) {
-  const id = req.params.id || 0;
-  const actor = req.body;
-  const n = await actorModel.patch(id, actor);
-  res.json({
-    affected: n,
-  });
-});
-```
-
-## Video
-
-https://drive.google.com/file/d/11h2LUiConChdjqv0VkZTQVCvydhEGsYz/view?usp=sharing

@@ -1,18 +1,12 @@
 import express from 'express';
-import cors from 'cors';
-
-import categoryRouter from './routes/category.route.js';
-import filmRouter from './routes/film.route.js';
-import actorRouter from './routes/actor.route.js';
-import authRouter from './routes/auth.route.js';
-
 import dotenv from 'dotenv';
-dotenv.config();
+
+import filmRouter from './routes/film.route.js';
 
 const app = express();
-app.use(express.json());
 
-app.use(cors());
+dotenv.config();
+app.use(express.json());
 
 app.get('/', function (req, res) {
   res.json({
@@ -20,10 +14,7 @@ app.get('/', function (req, res) {
   });
 });
 
-app.use('/api/categories', categoryRouter);
 app.use('/api/films', filmRouter);
-app.use('/api/actor', actorRouter);
-app.use('/api/auth', authRouter);
 
 app.post('/', function (req, res) {
   res.status(201).json({
@@ -48,7 +39,7 @@ app.use(function (err, req, res, next) {
   });
 });
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3002;
 app.listen(PORT, function () {
   console.log(`Sakila API is listening at http://localhost:${PORT}`);
 });
