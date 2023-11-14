@@ -1,11 +1,9 @@
 import express from 'express';
-import axios from 'axios';
 import dotenv from 'dotenv';
 
 import actorRouter from './routes/actor.route.js';
 import authRouter from './routes/auth.route.js';
-
-import verifyToken from './middlewares/verifyToken.js';
+import filmRouter from './routes/film.route.js';
 
 const app = express();
 app.use(express.json());
@@ -20,12 +18,7 @@ app.get('/', function (req, res) {
 
 app.use('/api/actor', actorRouter);
 app.use('/auth', authRouter);
-
-app.get('/api/film', verifyToken, async function (req, res) {
-  const url = 'http://localhost:3002/api/films';
-  const response = await axios.get(url);
-  res.json(response.data);
-});
+app.use('/api/film', filmRouter);
 
 app.post('/', function (req, res) {
   res.status(201).json({

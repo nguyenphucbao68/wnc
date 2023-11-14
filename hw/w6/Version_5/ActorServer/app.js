@@ -1,13 +1,10 @@
 import express from 'express';
-import axios from 'axios';
 import dotenv from 'dotenv';
 
 import actorRouter from './routes/actor.route.js';
 import authRouter from './routes/auth.route.js';
 import filmRouter from './routes/film.route.js';
 import userRouter from './routes/user.route.js';
-
-import verifyToken from './middlewares/verifyToken.js';
 
 const app = express();
 app.use(express.json());
@@ -22,7 +19,7 @@ app.get('/', function (req, res) {
 
 app.use('/api/actor', actorRouter);
 app.use('/auth', authRouter);
-app.use('/api/films', filmRouter);
+app.use('/api/film', filmRouter);
 app.use('/api/user', userRouter);
 
 app.post('/', function (req, res) {
