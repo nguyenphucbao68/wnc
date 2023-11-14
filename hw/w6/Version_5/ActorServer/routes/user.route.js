@@ -20,9 +20,25 @@ router.get('/:id', async function (req, res) {
 
 router.post('/', async function (req, res) {
   const entity = req.body;
-  const ids = await userModel.add(entity);
-  entity.user_id = ids[0];
-  res.status(201).json(entity);
+
+  try {
+    const existingUser = await userModel.findByUsername(entity.username);
+
+    if (existingUser?.username === entity.username) {
+      return res.status(400).json({
+        msg: 'Username already exists',
+      });
+    }
+
+    const ids = await userModel.add(entity);
+    entity.user_id = ids[0];
+    res.status(201).json(entity);
+  } catch (error) {
+    console.error('Error creating user:', error);
+    res.status(500).json({
+      msg: 'Internal Server Error',
+    });
+  }
 });
 
 router.patch('/:id', async function (req, res) {

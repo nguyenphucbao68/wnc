@@ -1,8 +1,8 @@
 import express, { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import userModel, {
-  updateRefetchToken,
-  findByRefetchToken,
+  updateRefreshToken,
+  findByRefreshToken,
 } from '../models/user.model.js';
 
 const router = Router();
@@ -34,7 +34,7 @@ router.post('/login', async function (req, res, next) {
       }
     );
 
-    const refetchToken = jwt.sign(
+    const refreshToken = jwt.sign(
       {
         username: result.username ?? '',
       },
@@ -44,12 +44,12 @@ router.post('/login', async function (req, res, next) {
       }
     );
 
-    await updateRefetchToken(username, refetchToken);
+    await updateRefreshToken(username, refreshToken);
 
     res.status(200).json({
       msg: 'User logged in',
       accessToken: token,
-      refetchToken: refetchToken,
+      refreshToken: refreshToken,
     });
   } catch (err) {
     next(err);
@@ -58,9 +58,9 @@ router.post('/login', async function (req, res, next) {
 
 router.post('/token', async function (req, res, next) {
   try {
-    const { refetchToken } = req.body;
+    const { refreshToken } = req.body;
 
-    const result = await findByRefetchToken(refetchToken);
+    const result = await findByRefreshToken(refreshToken);
 
     if (result === null) {
       return res.status(401).json({
@@ -78,7 +78,7 @@ router.post('/token', async function (req, res, next) {
       }
     );
 
-    const newRefetchToken = jwt.sign(
+    const newRefreshToken = jwt.sign(
       {
         username: result.username ?? '',
       },
@@ -88,12 +88,12 @@ router.post('/token', async function (req, res, next) {
       }
     );
 
-    await updateRefetchToken(result.username, refetchToken);
+    await updateRefreshToken(result.username, refreshToken);
 
     res.status(200).json({
       msg: 'Refetch token success',
       accessToken: token,
-      refetchToken: newRefetchToken,
+      refreshToken: newRefreshToken,
     });
   } catch (err) {
     next(err);
