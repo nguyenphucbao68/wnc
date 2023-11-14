@@ -4,8 +4,6 @@ export default function verifySecret(req, res, next) {
   const clientTime = req.headers['time'];
   const clientHash = req.headers['token'];
 
-  console.log(clientTime, clientHash);
-
   if (!clientTime || !clientHash) {
     return res.status(401).json({
       error: 'Unauthorized',
