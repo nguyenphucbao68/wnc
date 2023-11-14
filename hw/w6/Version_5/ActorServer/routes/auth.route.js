@@ -56,7 +56,7 @@ router.post('/login', async function (req, res, next) {
   }
 });
 
-router.post('/token', async function (req, res, next) {
+router.post('/refresh', async function (req, res, next) {
   try {
     const { refreshToken } = req.body;
 
@@ -74,7 +74,7 @@ router.post('/token', async function (req, res, next) {
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: '1h',
+        expiresIn: '1m',
       }
     );
 
