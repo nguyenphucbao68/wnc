@@ -25,7 +25,7 @@ router.get('/', verifyToken, async function (req, res) {
     res.json(response.data);
   } catch (error) {
     res.status(401).json({
-      error: 'Unauthorized',
+      error: error.response.data.error,
     });
   }
 });
