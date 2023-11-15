@@ -142,13 +142,7 @@ router.get('/', verifyToken, async function (req, res) {
 
 ## Apply Secret Key to Film Server
 
-### Setup Environment
-
-1. Setup Library
-
-  - Crypto: `yarn add crypto`
-
-### Create Verify Secret Middleware and use it in API
+### Create Verify Secret Middleware (Using crypto to hash) and use it in API
 
 1. Create Verify Secret Middleware
   - Create a middleware (verifySecret.js) for verifying the secret key in the request headers.
@@ -210,12 +204,6 @@ router.get('/', verifySecret, async function (req, res) {
 ```
 
 ## Apply Secret Key to Actor Server
-
-### Setup Environment
-
-1. Setup Library
-
-  - Crypto: `yarn add crypto`
 
 ### Using Crypto to create hash and send to Film Server
 
