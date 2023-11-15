@@ -36,7 +36,7 @@ dotenv.config();
 
 1. Create Login API
   - In the auth.route.js file, define a route for handling user login.
-  - Extract email and password from the request body.
+  - Extract username and password from the request body.
   - Sign a JWT token with the user information and send it in the response.
 
 
