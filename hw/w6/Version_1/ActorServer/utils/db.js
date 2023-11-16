@@ -6,7 +6,8 @@ export default knex({
     host: '127.0.0.1',
     port: 3306,
     user: 'root',
-    database: 'sakila',
+    database: 'wnc',
   },
   pool: { min: 0, max: 10 },
 });
+
