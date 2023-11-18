@@ -3,7 +3,7 @@
 1. Nodejs
 2. NPM
 3. MySQL: using XAMPP (https://www.apachefriends.org/download.html)
-4. Library: Express, Knex, Mysql, Dotenv, Jwt, Crypto
+4. Library: Express, Knex, Mysql, Dotenv, Jwt
 5. Using 2 server: 1 for Actor, 1 for Film
 
 ## Steps
