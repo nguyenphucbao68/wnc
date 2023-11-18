@@ -62,6 +62,16 @@ router.post('/refresh', async function (req, res, next) {
 
     const result = await findByRefreshToken(refreshToken);
 
+    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+
+    const { exp } = decoded;
+
+    if (new Date().getTime() > exp * 1000) {
+      return res.status(401).json({
+        msg: 'Refresh token expired',
+      });
+    }
+
     if (result === null) {
       return res.status(401).json({
         msg: 'Invalid refresh token',
