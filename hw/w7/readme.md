@@ -242,6 +242,38 @@ $ node client.js
 
 1. NodeJS
 2. RabbitMQ (See [here](https://www.rabbitmq.com/download.html) to download)
+   In my case, i use `docker-compose.yml` file to define the RabbitMQ service:
+
+```console
+version: '3.8'
+services:
+  rabbitmq:
+    image: rabbitmq:3.8-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+
+```
+
+- Port `5672:5672`: Exposes the RabbitMQ default port for AMQP communication.
+- Port `15672:15672`: Exposes the RabbitMQ management UI web interface port.
+  ![Alt text](image.png)
+  If you want to log in this rabbitmq web interface, you might need to log in. And the default account is: `user`: `guest`, `password`:`guest`
+
+- Mounts specific directories from the host machine into the RabbitMQ container:
+
+  - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/: Mounts the host's RabbitMQ data directory to the container's /var/lib/rabbitmq/ directory. This allows persisting RabbitMQ data across container restarts.
+  - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq: Mounts the host's RabbitMQ log directory to the container's /var/log/rabbitmq directory for storing log data.
+
+  To run docker compose the `docker-compose.yml` file. Do the following:
+
+  ```console
+  $ docker compose up
+  ```
 
 # I. Request - Reply pattern
 
@@ -293,10 +325,8 @@ Next, we declare the request queue and reply queue on the RabbitMQ server:
 
 ```console
 	const requestQueue = 'request_queue';
-	const replyQueue = 'reply_queue';
 
 	await channel.assertQueue(requestQueue);
-	await channel.assertQueue(replyQueue);
 ```
 
 - `amqp.Channel.assertQueue(queue)` method to declare the queue on RabbitMQ server. If the queue does not exist, it will create a new one . In case the queue alread existed, it it will verify the queue's properties.
@@ -652,4 +682,157 @@ $ node client.js
 
 # Differentiation between synchronous api call vs asynchoronous api call
 
+|             | Synchronous API                                                                                                                                                                            | Asychronous API                                                                                                                                                                                                                 |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Definition  | In synchronous API calls, the program waits for the response from the API before executing the next line of code.                                                                          | In asynchronous API calls, the program initiates the API request and continues executing other tasks without waiting for the response. When the response is available, a callback, promise, or event is triggered to handle it. |
+| Pros        | **Simplicity**: Synchronous calls follow a linear flow, making code easier to understand and debug.                                                                                        | **Non-Blocking**: Enables the application to continue processing other tasks while waiting for responses. This prevents blocking and maximizes resource utilization.                                                            |
+|             | **Predictability**: The order of execution is clear and sequential, simplifying error tracing.                                                                                             | **Improved Performance**: Especially beneficial when dealing with multiple API calls or I/O-bound operations as they can be executed concurrently, enhancing overall application responsiveness.                                |
+|             | **Easier Error Handling**: Exception handling is often more straightforward as errors can be caught more easily in a linear execution flow.                                                | **Scalability**: Asynchronous operations allow for better scalability, enabling the system to handle more concurrent requests without waiting for previous ones to complete.                                                    |
+| Cons        | **Blocking**: Execution of subsequent code is halted until the API call completes. This can lead to inefficiencies, especially in scenarios where multiple tasks need to run concurrently. | **Complexity**: Asynchronous programming introduces callbacks, promises, or async/await mechanisms, which might add complexity to code logic, error handling, and debugging.                                                    |
+|             | **Performance Impact**: In scenarios with high latency or long response times, synchronous calls may cause the application to appear unresponsive.                                         | **Potential Race Conditions**: Handling shared resources or managing data dependencies in asynchronous operations might lead to race conditions or unexpected behavior if not handled properly.                                 |
+|             | **Resource Waste**: If the program is waiting for I/O-bound tasks (like network requests) in a synchronous manner, it might waste resources that could be utilized elsewhere.              | **Error Handling Complexity**: Error handling can become complex, especially when dealing with nested callbacks or promise chains.                                                                                              |
+| When to use | Situations with Simpler Logic: When the application logic is straightforward and does not require parallel processing or asynchronous operations.                                          | Concurrent Operations: When there's a need to perform multiple operations simultaneously, such as making multiple API calls concurrently.                                                                                       |
+|             | Small-Scale Operations: For smaller applications or when handling operations that don't heavily impact the overall system performance.                                                     | I/O-Bound Tasks: When dealing with operations involving waiting for I/O (like network requests, file I/O) to prevent blocking and utilize resources effectively.                                                                |
+|             |                                                                                                                                                                                            | Large-Scale Applications: In larger systems where scalability and responsiveness are crucial.                                                                                                                                   |
+
 # Simple chat application using socket.io and NodeJS
+
+## Prerequisites
+
+- NodeJS
+
+## 1. Create the folder and setup
+
+```console
+$ mkdir real-time
+$ cd real-time
+$ npm init
+```
+
+## 2. Install socket.io dependecy
+
+```console
+$ npm install express socket.io
+```
+
+And your `package.json` will look like this:
+
+```json
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2"
+  }
+```
+
+## 3. Setup socket.io server
+
+In `server.js` file, we do the following.
+
+1. Creates an Express application instance called `app`.
+
+```console
+const app = express();
+```
+
+2. Creates an HTTP server using the `http` module and passes the `app` (Express application) as an argument to the `createServer` function.
+
+```console
+const server = http.createServer(app);
+```
+
+3. Initializes `Socket.IO` by passing the `server` (HTTP server) to the `socketIO` function. This allows `Socket.IO` to work with the existing HTTP server created using Express.
+
+```console
+const io = socketIO(server);
+```
+
+4. Static Files Serving:
+
+```console
+app.use(express.static(__dirname + '/public'));
+```
+
+Configures Express to serve static files located in the `public` directory. This line allows the HTML, CSS, JavaScript, or other resources in the public directory to be served to clients accessing the server. Which we will create a simple html file for clients to chat.
+
+5. Socket.IO Connection Handling:
+
+```console
+io.on('connection', (socket) => {
+    console.log('A user connected');
+
+    socket.on('disconnect', () => {
+        console.log('User disconnected');
+    });
+
+    socket.on('chat message', (msg) => {
+        io.emit('chat message', msg);
+    });
+});
+```
+
+- Listens for incoming Socket.IO connections.
+- When a client connects (`connection` event), it logs a message to the server console indicating that a user has connected.
+- Defines event listeners:
+
+  - `disconnect`: Listens for when a user disconnects and logs a message to the server console.
+  - `chat message`: Listens for messages sent by clients and emits them to all connected clients using `io.emit`. This allows real-time broadcasting of chat messages to all connected clients.
+
+  6. Server Listening on port 3000:
+
+  ```console
+  server.listen(3000, () => {
+    console.log('Server listening on port 3000');
+  });
+  ```
+
+## 4. Create a simple html file for clients to chat
+
+We pay attention to the script in `index.html` file in `public` directory:
+
+```console
+		<script src="/socket.io/socket.io.js"></script>
+		<script>
+			const socket = io();
+
+			const form = document.getElementById('form');
+			const input = document.getElementById('input');
+			const messages = document.getElementById('messages');
+
+			form.addEventListener('submit', (e) => {
+				e.preventDefault();
+				if (input.value) {
+					socket.emit('chat message', input.value);
+					input.value = '';
+				}
+			});
+
+			socket.on('chat message', (msg) => {
+				const li = document.createElement('li');
+				li.textContent = msg;
+				messages.appendChild(li);
+			});
+		</script>
+```
+
+- `<script src="/socket.io/socket.io.js"></script>`: This line will load Socket.io client library (`socket.io.js`) from the server. (When Socket.io server is created above. It will automatically serves `socket.io.js` file through specific endpoint: `/socket.io/socket.io.js`)
+- ```console
+  		form.addEventListener('submit', (e) => {
+  			e.preventDefault();
+  			if (input.value) {
+  				socket.emit('chat message', input.value);
+  				input.value = '';
+  			}
+  		});
+  ```
+
+When hitting submit button, if the input value not empty, the Socket.io client will emit a `chat message` event to the server with message.
+
+- ```console
+  socket.on('chat message', (msg) => {
+      const li = document.createElement('li');
+      li.textContent = msg;
+      messages.appendChild(li);
+  });
+  ```
+
+Socket.io client will listen for incoming `chat message` event from the server and create the message text to the screen.
