@@ -18,7 +18,7 @@ function main() {
 	);
 
 	// Calling the RPC method
-	client.getPerson({ id: 1 }, function (err, response) {
+	client.getPerson({ id: 0 }, function (err, response) {
 		if (err) {
 			console.log('Fail to send request');
 		} else {
