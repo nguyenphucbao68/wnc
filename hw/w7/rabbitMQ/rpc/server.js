@@ -6,8 +6,6 @@ async function respondToRPC() {
 
 	const queue = 'rpc_queue';
 
-	const message = 'Hello World';
-
 	await channel.assertQueue(queue);
 
 	channel.consume(queue, (msg) => {

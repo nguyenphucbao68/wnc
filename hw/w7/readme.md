@@ -238,26 +238,418 @@ $ node client.js
 
 # Using RabbitMQ to integrate 2 systems (request/reply, pub/sub, remote procedure call)
 
+## Prerequisite:
+
+1. NodeJS
+2. RabbitMQ (See [here](https://www.rabbitmq.com/download.html) to download)
+
+# I. Request - Reply pattern
+
+## 1. Create folder
+
+```console
+$ mkdir request-reply
+$ cd request-reply
+$ npm init
+```
+
+## 2. Install the amqp.node client library
+
+First, install amqp.node using npm:
+
+```console
+$ npm install amqplib
+```
+
+The package json will look like this:
+
+```json
+  "dependencies": {
+    "amqplib": "^0.10.3"
+  }
+```
+
+## 3. Implement server
+
+We need to require the library first:
+
+```console
+var amqp = require('amqplib/callback_api');
+```
+
+then connect to RabbitMQ server
+
+```console
+amqp.connect('amqp://localhost', function(error0, connection) {});
+```
+
+Next we create a channel, which is where most of the API for getting things done resides:
+
+```console
+const channel = await connection.createChannel();
+```
+
+Next, we declare the request queue and reply queue on the RabbitMQ server:
+
+```console
+	const requestQueue = 'request_queue';
+	const replyQueue = 'reply_queue';
+
+	await channel.assertQueue(requestQueue);
+	await channel.assertQueue(replyQueue);
+```
+
+- `amqp.Channel.assertQueue(queue)` method to declare the queue on RabbitMQ server. If the queue does not exist, it will create a new one . In case the queue alread existed, it it will verify the queue's properties.
+
+Next, we implement the server to wait on the request queue. If a message is caught, the the server will assert reply message to the reply queue.
+
+```console
+	channel.consume(requestQueue, (msg) => {
+		console.log(`Received request: ${msg.content.toString()}`);
+
+		const response = 'This is the server response!';
+
+		channel.sendToQueue(msg.properties.replyTo, Buffer.from(response));
+		channel.ack(msg);
+	});
+```
+
+- `channel.consume()` sets up a consumer on the specified `requestQueue` to receive messages from this queue. When a message arrives, the provided callback function is invoked.
+- `console.log(`Received request: ${msg.content.toString()}`);`: print the message content to console log.
+- `const response = 'This is the server response!';`: declare a reply string to send to reply queue.
+- `channel.sendToQueue(msg.properties.replyTo, Buffer.from(response));`: Send the `response` to the message reply queue defined in `msg.properties.replyTo`. RabbitMQ expect message payload to be binary data so we use `Buffer.from(response)`
+- `channgel.ack(msg)`: Confirm to RabbitMQ that code has successfully processed the message and it can safely remove it from the queue, preventing it from being re-delivered in case of a consumer failure or disconnection.
+
+The whole `server.js` will be [here](https://github.com/nguyenphucbao68/wnc/blob/master/hw/w7/rabbitMQ/request-reply/server.js)
+
+## 4. Implement client
+
+The setting up code in client is the same as server.
+
+```console
+const connection = await amqp.connect('amqp://localhost');
+	const channel = await connection.createChannel();
+
+	const requestQueue = 'request_queue';
+	const replyQueue = 'reply_queue';
+
+	await channel.assertQueue(requestQueue);
+	await channel.assertQueue(replyQueue);
+
+```
+
+Now, we declare a request message:
+
+```console
+const message = 'Hello, Server!';
+```
+
+And then send to request queue:
+
+```console
+	channel.sendToQueue(requestQueue, Buffer.from(message), {
+		replyTo: replyQueue,
+	});
+```
+
+- We provide the `replyTo` property to note the reply queue client will consume once server send the response back.
+
+Finally, client will consume response sent back from server:
+
+```console
+	channel.consume(
+		replyQueue,
+		(msg) => {
+			console.log(`Received response: ${msg.content.toString()}`);
+			connection.close();
+		},
+		{ noAck: true }
+	);
+```
+
+- The callback function will print out the response message to console, then close connection.
+- `{noAck: true}` options means that message consumed from the queue will be automatically acknowledged by RabbitMQ without requiring manual acknowledgment from the consumer.
+
+The whole `client.js` will be [here](https://github.com/nguyenphucbao68/wnc/blob/master/hw/w7/rabbitMQ/request-reply/client.js)
+
+# II. Pub-Sub pattern
+
+In pub-sub pattern, a publisher will deliver message to multiple consumers.
+
+To illustrate the pattern, we're going to build a simple logging system. It will consist of two programs -- the first will emit log messages and the second will receive and print them.
+
+Essentially, published log messages are going to be broadcast to all the receivers.
+
+## 1. Create folder
+
+```console
+$ mkdir pub-sub
+$ cd pub-sub
+$ npm init
+```
+
+## 2. Install the amqp.node client library
+
+First, install amqp.node using npm:
+
+```console
+$ npm install amqplib
+```
+
+The package json will look like this:
+
+```json
+  "dependencies": {
+    "amqplib": "^0.10.3"
+  }
+```
+
+## 3. Implement publisher
+
+We need to require the library first:
+
+```console
+var amqp = require('amqplib/callback_api');
+```
+
+then connect to RabbitMQ server
+
+```console
+amqp.connect('amqp://localhost', function(error0, connection) {});
+```
+
+Next we create a channel, which is where most of the API for getting things done resides:
+
+```console
+const channel = await connection.createChannel();
+```
+
+The core idea in the messaging model in RabbitMQ is that the producer never sends any messages directly to a queue. Actually, quite often the producer doesn't even know if a message will be delivered to any queue at all.
+
+Instead, the producer can only send messages to an exchange. An exchange is a very simple thing. On one side it receives messages from producers and the other side it pushes them to queues. The exchange must know exactly what to do with a message it receives. Should it be appended to a particular queue? Should it be appended to many queues? Or should it get discarded. The rules for that are defined by the exchange type.
+
+There are a few exchange types available: ``direct`, `topic`, `headers` and `fanout`. We'll focus on the last one -- the `fanout`. Let's create an exchange of this type, and call it `logs`:
+
+```console
+	const exchange = 'logs';
+	const message1 = 'Log message 1';
+	const message2 = 'Log message 2';
+
+	await channel.assertExchange(exchange, 'fanout');
+```
+
+Now, we can publish the message to the exchange.
+
+```console
+  channel.publish(exchange, '', Buffer.from(message1));
+	console.log(`Published: ${message1}`);
+
+	channel.publish(exchange, '', Buffer.from(message2));
+	console.log(`Published: ${message2}`);
+```
+
+And, we can set the time for the publisher to close.
+
+```console
+	setTimeout(() => {
+		connection.close();
+		process.exit(0);
+	}, 500);
+```
+
+The whole `publisher.js` file is [here](https://github.com/nguyenphucbao68/wnc/blob/master/hw/w7/rabbitMQ/pub-sub/publisher.js):
+
+## 3. Implement the subscriber
+
+First we setup the same as publisher:
+
+```console
+  const connection = await amqp.connect('amqp://localhost');
+	const channel = await connection.createChannel();
+
+	const exchange = 'logs';
+
+	await channel.assertExchange(exchange, 'fanout');
+```
+
+Next, we declare the queue to consume when the exchage emit the message:
+
+```console
+const { queue } = await channel.assertQueue('', { exclusive: true });
+```
+
+- We create a temporary queue with a random name and once the consumer is disconnected, the queue is automatically deleted (`{exclusive: true}`).
+
+We've already created a fanout exchange and a queue. Now we need to tell the exchange to send messages to our queue. That relationship between exchange and a queue is called a binding.
+
+```console
+	channel.bindQueue(queue, exchange, '');
+```
+
+Lastly, we consume on the queue we created and print out the log message once it is sent to the queue.
+
+```console
+	channel.consume(
+		queue,
+		(msg) => {
+			console.log(`Received log: ${msg.content.toString()}`);
+		},
+		{ noAck: true }
+	);
+```
+
+The whole `subscriber.js` will be [here](https://github.com/nguyenphucbao68/wnc/blob/master/hw/w7/rabbitMQ/pub-sub/subscriber.js)
+
+## 4. Run the publisher and subscriber
+
+Run the publisher first:
+
+```console
+$ node publisher.js
+```
+
+Run the subscriber in multiple process to see all the receiver will receive the log:
+
+```console
+$ node subscriber.js
+```
+
+# III. RPC pattern
+
+## 1. Create folder
+
+```console
+$ mkdir rpc
+$ cd rpc
+$ npm init
+```
+
+## 2. Install the amqp.node client library
+
+First, install amqp.node using npm:
+
+```console
+$ npm install amqplib
+```
+
+The package json will look like this:
+
+```json
+  "dependencies": {
+    "amqplib": "^0.10.3"
+  }
+```
+
+## 3. Implement client
+
+We need to require the library first:
+
+```console
+var amqp = require('amqplib/callback_api');
+```
+
+then connect to RabbitMQ server
+
+```console
+amqp.connect('amqp://localhost');
+```
+
+Next we create a channel, which is where most of the API for getting things done resides:
+
+```console
+const channel = await connection.createChannel();
+```
+
+Next, we declare the queue on the RabbitMQ server. Also, we need to create a exclusive replyQueue with a random name :
+
+```console
+	const queue = 'rpc_queue';
+	const replyQueue = await channel.assertQueue('', { exclusive: true });
+```
+
+To make the request private and secure, we need a colleration id:
+
+```console
+const correlationId = generateUuid();
+```
+
+which is generated by a simple random function, this is for demo only. In fact, we should use other libraries to make the `correlationId` more secure.
+
+```console
+function generateUuid() {
+	return (
+		Math.random().toString() +
+		Math.random().toString() +
+		Math.random().toString()
+	);
+}
+```
+
+Next, we send the message to public queue on server. However, server will only know the reply queue for private client through `correlationId` and `replyTo` properties sent along with message.
+
+```console
+	const message = 'RPC request';
+	channel.sendToQueue(queue, Buffer.from(message), {
+		correlationId: correlationId,
+		replyTo: replyQueue.queue,
+	});
+```
+
+Finally, we setup a consumer to receive the message from server:
+
+```console
+	channel.consume(
+		replyQueue.queue,
+		(msg) => {
+			if (msg.properties.correlationId == correlationId) {
+				console.log(`Received response: ${msg.content.toString()}`);
+				channel.close();
+				connection.close();
+			}
+		},
+		{ noAck: true }
+	);
+```
+
+The whole file for `client.js` is [here](https://github.com/nguyenphucbao68/wnc/blob/master/hw/w7/rabbitMQ/rpc/client.js)
+
+## 4. Implement server
+
+The setup for server is discussed above. What is noticeable is the method to consume and send back to client below:
+
+```console
+const queue = 'rpc_queue';
+
+	await channel.assertQueue(queue);
+
+	channel.consume(queue, (msg) => {
+		console.log(`Received RPC request: ${msg.content.toString()}`);
+
+		const response = 'RPC response';
+		channel.sendToQueue(msg.properties.replyTo, Buffer.from(response), {
+			correlationId: msg.properties.correlationId,
+		});
+
+		channel.ack(msg);
+	});
+```
+
+Th whole file `server.js` is [here](https://github.com/nguyenphucbao68/wnc/blob/master/hw/w7/rabbitMQ/rpc/server.js)
+
+## 5. Run the server and client.
+
+Run the server:
+
+```console
+$ node server.js
+```
+
+Run the client:
+
+```console
+$ node client.js
+```
+
 # Differentiation between synchronous api call vs asynchoronous api call
 
 # Simple chat application using socket.io and NodeJS
-
-# Yêu cầu alternative RestufulAPI để kết nối 2 máy tính
-
-- Tất cả các nhóm làm GRPC
-- Xài yêu cầu đơn giản: 1 + 1 = 2
-- Message Queue (Capcha,RabbitMQ):
-  - Phân biệt async / sync api call
-- Khi nào nên sử dụng message queue, khi nào sử dụng Restful API
-
-# Làm socket
-
-- Express: SocketIO (gợi ý)
-- 2 client chat realtime, không cần F5
-- Giao diện: 2 file html có chat box, nút gửi
-
-React
-
-Redux
-
-Router
