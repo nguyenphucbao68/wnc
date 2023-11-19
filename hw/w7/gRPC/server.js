@@ -12,9 +12,14 @@ var packageDefinition = protoLoader.loadSync(PROTO_PATH, {
 
 var personProto = grpc.loadPackageDefinition(packageDefinition);
 
+const data = [
+	{ id: 0, name: 'admin' },
+	{ id: 1, name: 'user' },
+];
 function getPerson(call, callback) {
-	console.log('call ' + call.request.id);
-	callback(null, { message: call.request.id });
+	const requestedId = call.request.id;
+	const personData = data.find((item) => item.id == requestedId);
+	callback(null, personData);
 }
 
 /**
@@ -22,7 +27,6 @@ function getPerson(call, callback) {
  * sample server port
  */
 function main() {
-	console.log('personProto.Person.service ', personProto.Person.service);
 	var server = new grpc.Server();
 	server.addService(personProto.Person.service, { getPerson: getPerson });
 	server.bindAsync(
