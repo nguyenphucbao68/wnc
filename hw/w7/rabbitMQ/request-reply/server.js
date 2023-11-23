@@ -5,10 +5,8 @@ async function sendRequest() {
 	const channel = await connection.createChannel();
 
 	const requestQueue = 'request_queue';
-	const replyQueue = 'reply_queue';
 
 	await channel.assertQueue(requestQueue);
-	await channel.assertQueue(replyQueue);
 
 	channel.consume(requestQueue, (msg) => {
 		console.log(`Received request: ${msg.content.toString()}`);
