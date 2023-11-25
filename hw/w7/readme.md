@@ -694,6 +694,7 @@ $ node client.js
 | When to use | Situations with Simpler Logic: When the application logic is straightforward and does not require parallel processing or asynchronous operations.                                          | Concurrent Operations: When there's a need to perform multiple operations simultaneously, such as making multiple API calls concurrently.                                                                                       |
 |             | Small-Scale Operations: For smaller applications or when handling operations that don't heavily impact the overall system performance.                                                     | I/O-Bound Tasks: When dealing with operations involving waiting for I/O (like network requests, file I/O) to prevent blocking and utilize resources effectively.                                                                |
 |             |                                                                                                                                                                                            | Large-Scale Applications: In larger systems where scalability and responsiveness are crucial.                                                                                                                                   |
+| Noticeable  | Server must start before client or else it would crash                                                                                                                                     | Client or server can start first without crashing.                                                                                                                                                                              |
 
 # Simple chat application using socket.io and NodeJS
 
@@ -836,3 +837,8 @@ When hitting submit button, if the input value not empty, the Socket.io client w
   ```
 
 Socket.io client will listen for incoming `chat message` event from the server and create the message text to the screen.
+
+# Video
+- [how to use gRPC to integrate 2 systems](https://youtu.be/vEuJF0zGg4U)
+- [How to use Message Queue to integrate 2 systems, follow the pub/sub pattern](https://youtu.be/TNjJ8PQQT84)
+- [Simple chat application using socket.io](https://youtu.be/iVp2oiGbehY)
