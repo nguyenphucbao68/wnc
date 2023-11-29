@@ -1,7 +1,7 @@
 import React from 'react';
 import { useContext } from 'react';
 import { ListGroup, Button } from 'react-bootstrap';
-import { TaskContext } from '../../contexts/TodoListProvider';
+import { TaskContext } from '../../contexts/TaskProvider';
 
 function TaskItem({ task }) {
   const { dispatch } = useContext(TaskContext);

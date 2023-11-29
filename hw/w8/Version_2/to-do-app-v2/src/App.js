@@ -1,5 +1,5 @@
 import './App.css';
-import { TaskProvider } from './contexts/TodoListProvider';
+import { TaskProvider } from './contexts/TaskProvider';
 import TodoApp from './pages/TodoApp';
 
 function App() {

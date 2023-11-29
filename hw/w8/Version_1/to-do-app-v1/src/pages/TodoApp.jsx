@@ -4,7 +4,7 @@ import AddTaskForm from '../components/AddTaskForm/AddTaskForm';
 import TaskList from '../components/TaskList/TaskList';
 import { Accordion } from 'react-bootstrap';
 
-function TodoListPage() {
+function TodoApp() {
   const [todoList, setTodoList] = useState(() => {
     const storedTodoList = localStorage.getItem('todoList');
 
@@ -83,4 +83,4 @@ function TodoListPage() {
   );
 }
 
-export default TodoListPage;
+export default TodoApp;

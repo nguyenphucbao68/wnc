@@ -1,10 +1,10 @@
 import './App.css';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
-import TodoListPage from './pages/TodoListPage';
+import TodoApp from './pages/TodoApp';
 
 function App() {
-  return <TodoListPage />;
+  return <TodoApp />;
 }
 
 export default App;

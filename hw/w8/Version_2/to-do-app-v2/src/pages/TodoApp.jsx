@@ -4,7 +4,7 @@ import AddTaskForm from '../components/AddTaskForm/AddTaskForm';
 import TaskList from '../components/TaskList/TaskList';
 import { Accordion } from 'react-bootstrap';
 import { useContext } from 'react';
-import { TaskContext } from '../contexts/TodoListProvider';
+import { TaskContext } from '../contexts/TaskProvider';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function TodoApp() {

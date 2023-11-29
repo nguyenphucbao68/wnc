@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import { Button } from 'react-bootstrap';
 import { useContext } from 'react';
-import { TaskContext } from '../../contexts/TodoListProvider';
+import { TaskContext } from '../../contexts/TaskProvider';
 
 function AddTaskForm() {
   const [newTask, setNewTask] = useState('');
