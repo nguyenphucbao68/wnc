@@ -556,9 +556,10 @@ export default FilterTaskFrom;
 ```
 
 ### Store data in localStorage
-To ensure persistent data storage and retrieval, the application utilizes the local storage mechanism. Whenever a task's status is updated or a new task is created, the corresponding changes are reflected in the local storage. Additionally, upon the initial loading of the application, the todo list is retrieved from local storage and stored in the todoList state.
-```jsx
 
+To ensure persistent data storage and retrieval, the application utilizes the local storage mechanism. Whenever a task's status is updated or a new task is created, the corresponding changes are reflected in the local storage. Additionally, upon the initial loading of the application, the todo list is retrieved from local storage and stored in the todoList state.
+
+```jsx
 function App() {
   // Read localStorage and store it when state is init
   const [todoList, setTodoList] = useState(() => {
@@ -574,7 +575,6 @@ function App() {
     setFilteredList(todoList);
   }, [todoList]);
 
-
   // rest of the code
 }
 
@@ -584,6 +584,223 @@ export default App;
 This code snippet showcases the seamless integration of local storage with the application's state. The useState hook is employed to initialize the todoList state with data from local storage during the app's initialization. Subsequently, the useEffect hook ensures that any updates to the todoList are consistently mirrored in the local storage, thereby maintaining the integrity of the application's data.
 
 ## Conclusion
+
 In this Version 1 of the Todo App, we've successfully addressed the need to persistently store and retrieve data using local storage. However, we've identified a limitation in the approach of passing props from the App component to TaskList and then to ItemList for updates. To overcome this, Version 2 will explore the implementation of State Global Management for a more efficient and scalable solution.
 
 # Version 2
+
+## 1. One-Way Data Flow Architecture
+
+Implement a one-way data flow architecture using `useContext` and `useReducer`
+
+This folder will contain all files related to the global state management of your application.
+
+In folder `context`, create `TaskProvider.jsx` to store global tasks
+
+Import necessary dependencies and use `createContext` to create a context that will hold the state related to tasks.
+
+```jsx
+// TaskProvider.jsx
+import React, { useReducer, createContext } from 'react';
+
+export const TaskContext = createContext();
+```
+
+Define taskReducer:
+
+- The taskReducer function specifies how the state should change in response to different actions.
+- Actions are objects that describe what should happen.
+
+```jsx
+const taskReducer = (state, action) => {
+  console.log({ state, action });
+  switch (action.type) {
+    case 'ADD_TASK': {
+      return [
+        ...state,
+        {
+          id: Date.now(),
+          title: action.payload,
+          completed: false,
+        },
+      ];
+    }
+
+    case 'TOGGLE_TASK': {
+      return state.map((task) =>
+        task.id === action.payload
+          ? { ...task, completed: !task.completed }
+          : task
+      );
+    }
+
+    case 'INITIALIZE_TASKS': {
+      return [...action.payload];
+    }
+
+    default:
+      return state;
+  }
+};
+```
+
+Create TaskProvider component:
+
+- Use useReducer to manage the state of tasks using the `taskReducer`.
+- Provide the `TaskContext.Provider` with the value prop containing the `tasks` and `dispatch` function.
+
+```jsx
+export const TaskProvider = ({ children }) => {
+  const [tasks, dispatch] = useReducer(taskReducer, []);
+
+  return (
+    <TaskContext.Provider value={{ tasks, dispatch }}>
+      {children}
+    </TaskContext.Provider>
+  );
+};
+```
+
+Now, you can use the TaskProvider in your index.js or any higher-level component to wrap your TodoApp component.
+
+```jsx
+// App.js
+
+import './App.css';
+import { TaskProvider } from './contexts/TodoListProvider';
+import TodoApp from './pages/TodoApp';
+
+function App() {
+  return (
+    <TaskProvider>
+      <TodoApp />
+    </TaskProvider>
+  );
+}
+
+export default App;
+```
+
+## 2. Remove props probagation
+
+### TaskItem Component:
+
+In the TaskItem component, the onToggleComplete prop has been removed. Instead, the dispatch function from the TaskContext is used to update the status of tasks. Here's a breakdown of the changes:
+
+```jsx
+// TaskItem.jsx;
+function TaskItem({ task }) {
+  const { dispatch } = useContext(TaskContext);
+
+  const handleToggleComplete = () => {
+    dispatch({
+      type: 'TOGGLE_TASK',
+      payload: task.id,
+    });
+  };
+
+  return (
+    <ListGroup.Item action variant={task.completed ? 'success' : 'primary'}>
+      <Button
+        variant={task.completed ? 'success' : 'outline-success'}
+        style={{ marginRight: '4px' }}
+        onClick={handleToggleComplete}
+      />
+      {task.title}
+    </ListGroup.Item>
+  );
+}
+```
+
+### AddTaskForm Component
+
+Similar to the `TaskItem` component, the `onAddItem` prop is removed from the `AddTaskForm`. The `dispatch` function is used to create a new task.
+
+```jsx
+// AddTaskForm.jsx
+
+function AddTaskForm() {
+  const [newTask, setNewTask] = useState('');
+  const { dispatch } = useContext(TaskContext);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (newTask.trim() !== '') {
+      dispatch({
+        type: 'ADD_TASK',
+        payload: newTask,
+      });
+      setNewTask('');
+    }
+  };
+
+  // ... rest of the code
+}
+```
+Remember to remove `onAddItem` props pass from `TaskList` component to `TaskItem`
+
+### TodoApp page
+
+In the TodoApp component, all state-related to tasks has been removed. Tasks are now imported directly from the TaskContext. Here's a breakdown:
+
+```jsx
+//TodoApp.jsx
+function TodoApp() {
+  const { tasks, dispatch } = useContext(TaskContext);
+
+  const [filteredList, setFilteredList] = useState([...tasks]);
+
+  useEffect(() => {
+    const storedTasks = JSON.parse(localStorage.getItem('todo'));
+    if (storedTasks) {
+      dispatch({ type: 'INITIALIZE_TASKS', payload: storedTasks });
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    setFilteredList([...tasks]);
+    localStorage.setItem('todo', JSON.stringify(tasks));
+  }, [tasks]);
+
+  const onFilterTasks = (value) => {
+    if (value.trim() === '') {
+      setFilteredList([...tasks]);
+    } else {
+      const filteredTasks = tasks.filter(({ title }) => {
+        return title.toLowerCase().includes(value.toLowerCase());
+      });
+      setFilteredList(filteredTasks);
+    }
+  };
+
+  const uncompletedTasks = filteredList.filter(({ completed }) => !completed);
+  const completedTasks = filteredList.filter(({ completed }) => completed);
+
+  return (
+    <div
+      style={{
+        width: '70%',
+        margin: 'auto',
+        backgroundColor: 'gray',
+      }}
+    >
+      <FilterTaskFrom onFilterTasks={onFilterTasks} />
+      <AddTaskForm />
+      <TaskList taskListItems={uncompletedTasks} />
+      {completedTasks.length > 0 ? (
+        <Accordion defaultActiveKey='0' className='mt-4'>
+          <Accordion.Item eventKey='0'>
+            <Accordion.Header>Completed</Accordion.Header>
+            <Accordion.Body>
+              <TaskList taskListItems={completedTasks} />
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+      ) : null}
+    </div>
+  );
+}
+```
+
+These changes make use of the global state managed by TaskContext through the `useContext` hook, eliminating the need for prop drilling. The `dispatch` function is used to update the tasks' status and add new tasks.
