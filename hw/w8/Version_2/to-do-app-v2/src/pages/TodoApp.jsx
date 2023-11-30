@@ -21,7 +21,6 @@ function TodoApp() {
 
   useEffect(() => {
     setFilteredList([...tasks]);
-    localStorage.setItem('todo', JSON.stringify(tasks));
   }, [tasks]);
 
   const onFilterTasks = (value) => {
@@ -39,13 +38,7 @@ function TodoApp() {
   const completedTasks = filteredList.filter(({ completed }) => completed);
 
   return (
-    <div
-      style={{
-        width: '70%',
-        margin: 'auto',
-        backgroundColor: 'gray',
-      }}
-    >
+    <div className='container'>
       <FilterTaskFrom onFilterTasks={onFilterTasks} />
       <AddTaskForm />
       <TaskList taskListItems={uncompletedTasks} />

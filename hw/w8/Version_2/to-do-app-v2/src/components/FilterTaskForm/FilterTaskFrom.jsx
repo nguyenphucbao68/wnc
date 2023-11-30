@@ -7,7 +7,7 @@ function FilterTaskFrom({ onFilterTasks }) {
 
   useEffect(() => {
     onFilterTasks(filterTasks);
-  }, [filterTasks]);
+  }, [filterTasks, onFilterTasks]);
 
   return (
     <Form.Control
