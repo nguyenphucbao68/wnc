@@ -11,13 +11,12 @@ function TaskItem({ task, onToggleComplete }) {
     <ListGroup.Item action variant={task.completed ? 'success' : 'primary'}>
       <Button
         variant={task.completed ? 'success' : 'outline-success'}
-        style={{ marginRight: '4px' }}
         onClick={handleToggleComplete}
         className='mr-2'
       >
         {task.completed ? <IoMdRemove /> : <IoMdAdd />}
       </Button>
-      <span>{task.title}</span>
+      <span>{task.completed ? <del>{task.title}</del> : task.title}</span>
     </ListGroup.Item>
   );
 }
