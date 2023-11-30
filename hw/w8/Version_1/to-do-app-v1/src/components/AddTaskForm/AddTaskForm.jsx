@@ -1,35 +1,34 @@
-import React, { useState } from 'react';
-import { Form, Button } from 'react-bootstrap';
-import { IoMdAddCircleOutline } from 'react-icons/io';
+import React, { useRef } from "react";
+import { Button, Form } from "react-bootstrap";
+import { IoMdAddCircleOutline } from "react-icons/io";
 
 function AddTaskForm({ onAddItem }) {
-  const [newTask, setNewTask] = useState('');
+  const formRef = useRef();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (newTask.trim() !== '') {
+    const newTask = formRef.current.value;
+    if (newTask.trim() !== "") {
       onAddItem(newTask);
-      setNewTask('');
+      formRef.current.value = "";
     }
   };
 
   return (
-    <Form onSubmit={handleSubmit} className='d-flex flex-column gap-2'>
-      <Form.Group controlId='addTask'>
+    <Form onSubmit={handleSubmit} className="d-flex flex-column gap-2">
+      <Form.Group controlId="addTask">
         <Form.Control
-          type='text'
-          placeholder='Add a task'
-          size='sm'
-          value={newTask}
-          onChange={(e) => setNewTask(e.target.value)}
+          type="text"
+          ref={formRef}
+          placeholder="Add a task"
+          size="sm"
         />
       </Form.Group>
       <Button
-        variant='primary'
-        size='sm'
-        type='submit'
-        className='align-self-end'
+        variant="primary"
+        size="sm"
+        type="submit"
+        className="align-self-end"
       >
         Add
         <IoMdAddCircleOutline />
