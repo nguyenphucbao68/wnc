@@ -1,4 +1,4 @@
-import React, {useReducer, createContext} from 'react';
+import React, { useReducer, createContext } from 'react';
 
 export const TaskContext = createContext();
 
@@ -6,7 +6,7 @@ const taskReducer = (state, action) => {
   console.log({ state, action });
   switch (action.type) {
     case 'ADD_TASK': {
-      return [
+      const newTask = [
         ...state,
         {
           id: Date.now(),
@@ -14,14 +14,18 @@ const taskReducer = (state, action) => {
           completed: false,
         },
       ];
+      localStorage.setItem('todo', JSON.stringify(newTask));
+      return newTask;
     }
 
     case 'TOGGLE_TASK': {
-      return state.map((task) =>
+      const newTasks = state.map((task) =>
         task.id === action.payload
           ? { ...task, completed: !task.completed }
           : task
       );
+      localStorage.setItem('todo', JSON.stringify(newTasks));
+      return newTasks;
     }
 
     case 'INITIALIZE_TASKS': {

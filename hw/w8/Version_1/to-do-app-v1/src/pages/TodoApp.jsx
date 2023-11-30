@@ -53,14 +53,8 @@ function TodoApp() {
   const completedTasks = filteredList.filter(({ completed }) => completed);
 
   return (
-    <div
-      style={{
-        width: '70%',
-        margin: 'auto',
-        backgroundColor: 'gray',
-      }}
-    >
-      <FilterTaskFrom onFilterTasks={onFilterTasks} />
+    <div className='container'>
+      <FilterTaskFrom onFilterTasks={onFilterTasks}/>
       <AddTaskForm onAddItem={onAddItem} />
       <TaskList
         taskListItems={uncompletedTasks}

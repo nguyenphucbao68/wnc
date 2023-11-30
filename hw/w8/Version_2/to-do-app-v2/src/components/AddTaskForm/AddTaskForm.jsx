@@ -3,6 +3,7 @@ import Form from 'react-bootstrap/Form';
 import { Button } from 'react-bootstrap';
 import { useContext } from 'react';
 import { TaskContext } from '../../contexts/TaskProvider';
+import { IoMdAddCircleOutline } from 'react-icons/io';
 
 function AddTaskForm() {
   const [newTask, setNewTask] = useState('');
@@ -16,13 +17,14 @@ function AddTaskForm() {
         type: 'ADD_TASK',
         payload: newTask,
       });
+      
       setNewTask('');
     }
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <Form.Group controlId='addTask' style={{ padding: '10px' }}>
+    <Form onSubmit={handleSubmit} className='d-flex flex-column gap-2'>
+      <Form.Group controlId='addTask'>
         <Form.Control
           type='text'
           placeholder='Add a task'
@@ -30,20 +32,16 @@ function AddTaskForm() {
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}
         />
-        <div
-          style={{
-            width: '100%',
-            backgroundColor: '#faf9f8',
-            padding: '5px',
-            display: 'flex',
-            justifyContent: 'flex-end',
-          }}
-        >
-          <Button variant='primary' size='sm' type='submit'>
-            Add
-          </Button>
-        </div>
       </Form.Group>
+      <Button
+        variant='primary'
+        size='sm'
+        type='submit'
+        className='align-self-end'
+      >
+        Add
+        <IoMdAddCircleOutline />
+      </Button>
     </Form>
   );
 }

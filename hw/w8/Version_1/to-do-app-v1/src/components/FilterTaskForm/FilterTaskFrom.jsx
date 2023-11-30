@@ -7,16 +7,18 @@ function FilterTaskFrom({ onFilterTasks }) {
 
   useEffect(() => {
     onFilterTasks(filterTasks);
-  }, [filterTasks]);
+  }, [filterTasks, onFilterTasks]);
 
   return (
     <Form.Control
+      className='my-3'
       type='text'
+      placeholder='Search tasks'
       id='filterTasks'
       size='sm'
       value={filterTasks}
       onChange={(e) => setFilterTasks(e.target.value)}
-    />
+    ></Form.Control>
   );
 }
 
