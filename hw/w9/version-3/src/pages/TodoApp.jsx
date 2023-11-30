@@ -11,10 +11,12 @@ function TodoApp() {
   const { tasks, dispatch } = useContext(TaskContext);
 
   useEffect(() => {
-    const storedTasks = JSON.parse(localStorage.getItem('todo'));
-    if (storedTasks) {
-      dispatch({ type: 'INITIALIZE_TASKS', payload: storedTasks });
-    }
+    (()=>
+    setTimeout(()=>
+    fetch("http://localhost:3001/tasks")
+    .then((rawData)=> rawData.json())
+    .then((data)=>dispatch({ type: 'INITIALIZE_TASKS', payload: data })), 2000))()
+    
   }, [dispatch]);
 
   return (
