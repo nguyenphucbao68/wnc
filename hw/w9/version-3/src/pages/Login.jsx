@@ -18,8 +18,9 @@ const Login = () => {
   const [invalidSubmit, setInvalidSubmit] = useState(false);
   const navigate = useNavigate();
   const onSubmit = (data) => {
-    if(data.username === "Admin" && data.password === "Admin"){
+    if(data.password === "Admin"){
         localStorage.isLogin = true;
+        localStorage.username = data.username;
         navigate("/todo");
     }
     else setInvalidSubmit(true);

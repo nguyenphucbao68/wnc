@@ -59,7 +59,7 @@ function AddTaskForm() {
         size='sm'
         type='submit'
         className='align-self-end'
-        disable={isPending}
+        disabled={isPending}
       >
         Add
         {isPending? <AiOutlineLoading3Quarters /> :<IoMdAddCircleOutline />}

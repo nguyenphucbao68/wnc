@@ -2,10 +2,11 @@ import React, { useEffect } from 'react';
 import FilterTaskFrom from '../components/FilterTaskForm/FilterTaskFrom';
 import AddTaskForm from '../components/AddTaskForm/AddTaskForm';
 import TaskList from '../components/TaskList/TaskList';
-import { Accordion } from 'react-bootstrap';
+import { Accordion, Button } from 'react-bootstrap';
 import { useContext, useState } from 'react';
 import { TaskContext } from '../contexts/TaskProvider';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useNavigate } from 'react-router-dom';
 
 function TodoApp() {
   const { tasks, dispatch } = useContext(TaskContext);
@@ -21,12 +22,19 @@ function TodoApp() {
     }), 2000)
     
   }, [dispatch]);
+  const navigate = useNavigate();
+
+  const logout = ()=>{
+    localStorage.isLogin = false;
+    navigate('/');
+  }
 
   return (
     <div className='container'>
       {isPending && <div>Loading...</div>}
       {!isPending && tasks && (
       <div>
+        <p>{localStorage.getItem("username")}</p>
       <FilterTaskFrom />
 
       <AddTaskForm />
@@ -44,6 +52,9 @@ function TodoApp() {
         </Accordion>
       ) : null}
       </div>)}
+      <Button className="mt-3"onClick={logout}> 
+        Logout
+      </Button>
 
     </div>
   );

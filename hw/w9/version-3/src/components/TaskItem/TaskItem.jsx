@@ -39,7 +39,7 @@ function TaskItem({ task }) {
         variant={task.completed ? 'success' : 'outline-success'}
         onClick={handleToggleComplete}
         className="mr-2"
-        disable={isPending}
+        disabled={isPending}
       >
         {isPending && <AiOutlineLoading3Quarters/> }
         {!isPending && (task.completed ? <IoMdRemove /> : <IoMdAdd />)}
