@@ -7,24 +7,17 @@ const taskReducer = (state, action) => {
   switch (action.type) {
     case 'ADD_TASK': {
       const newTask = [
-        ...state,
-        {
-          id: Date.now(),
-          title: action.payload,
-          completed: false,
-        },
+        ...state, action.payload
       ];
-      localStorage.setItem('todo', JSON.stringify(newTask));
       return newTask;
     }
 
     case 'TOGGLE_TASK': {
       const newTasks = state.map((task) =>
-        task.id === action.payload
-          ? { ...task, completed: !task.completed }
+        task.id === action.payload.id
+          ? action.payload.id
           : task
       );
-      localStorage.setItem('todo', JSON.stringify(newTasks));
       return newTasks;
     }
 

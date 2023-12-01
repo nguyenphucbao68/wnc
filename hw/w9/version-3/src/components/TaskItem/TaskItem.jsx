@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useContext } from 'react';
 import { ListGroup, Button } from 'react-bootstrap';
 import { TaskContext } from '../../contexts/TaskProvider';
@@ -6,12 +6,31 @@ import { IoMdAdd, IoMdRemove } from 'react-icons/io';
 
 function TaskItem({ task }) {
   const { dispatch } = useContext(TaskContext);
+  const [isPending, setIsPending] = useState(false);
 
   const handleToggleComplete = () => {
-    dispatch({
-      type: 'TOGGLE_TASK',
-      payload: task.id,
-    });
+    task.completed = !task.completed
+    setIsPending(true);
+
+    setTimeout(()=>
+    fetch(`http://localhost:3001/tasks/${task.id}`,{
+      method: 'PUT',
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(task)
+    })
+    .then((response)=>{
+      if(!response.ok)
+        throw Error('Error');
+      return response.json();
+    })
+    .then((data)=>{
+      dispatch({
+        type: 'TOGGLE_TASK',
+        payload: data,
+      });
+      setNewTask('');
+      setIsPending(false);
+    }), 2000);
   };
 
   return (
