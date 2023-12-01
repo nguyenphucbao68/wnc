@@ -3,6 +3,7 @@ import { useContext } from 'react';
 import { ListGroup, Button } from 'react-bootstrap';
 import { TaskContext } from '../../contexts/TaskProvider';
 import { IoMdAdd, IoMdRemove } from 'react-icons/io';
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 function TaskItem({ task }) {
   const { dispatch } = useContext(TaskContext);
@@ -28,7 +29,6 @@ function TaskItem({ task }) {
         type: 'TOGGLE_TASK',
         payload: data,
       });
-      setNewTask('');
       setIsPending(false);
     }), 2000);
   };
@@ -39,8 +39,10 @@ function TaskItem({ task }) {
         variant={task.completed ? 'success' : 'outline-success'}
         onClick={handleToggleComplete}
         className="mr-2"
+        disable={isPending}
       >
-        {task.completed ? <IoMdRemove /> : <IoMdAdd />}
+        {isPending && <AiOutlineLoading3Quarters/> }
+        {!isPending && (task.completed ? <IoMdRemove /> : <IoMdAdd />)}
       </Button>
       <span>{task.completed ? <del>{task.title}</del> : task.title}</span>
     </ListGroup.Item>

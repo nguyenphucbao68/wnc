@@ -15,7 +15,7 @@ const taskReducer = (state, action) => {
     case 'TOGGLE_TASK': {
       const newTasks = state.map((task) =>
         task.id === action.payload.id
-          ? action.payload.id
+          ? action.payload
           : task
       );
       return newTasks;

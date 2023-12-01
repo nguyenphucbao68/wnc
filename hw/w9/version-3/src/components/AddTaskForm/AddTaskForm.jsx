@@ -4,21 +4,42 @@ import Button from 'react-bootstrap/Button';
 import { useContext } from 'react';
 import { TaskContext } from '../../contexts/TaskProvider';
 import { IoMdAddCircleOutline } from 'react-icons/io';
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 function AddTaskForm() {
   const [newTask, setNewTask] = useState('');
+  const [isPending, setIsPending] = useState(false);
   const { dispatch } = useContext(TaskContext);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (newTask.trim() !== '') {
+      const task = {
+        title: newTask,
+        completed: false
+      }
+      setIsPending(true);
+
+      setTimeout(()=>
+    fetch(`http://localhost:3001/tasks`,{
+      method: 'POST',
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(task)
+    })
+    .then((response)=>{
+      if(!response.ok)
+        throw Error('Error');
+      return response.json();
+    })
+    .then((data)=>{
       dispatch({
         type: 'ADD_TASK',
-        payload: newTask,
+        payload: data,
       });
-      
       setNewTask('');
+      setIsPending(false);
+    }), 2000);
     }
   };
 
@@ -38,9 +59,10 @@ function AddTaskForm() {
         size='sm'
         type='submit'
         className='align-self-end'
+        disable={isPending}
       >
         Add
-        <IoMdAddCircleOutline />
+        {isPending? <AiOutlineLoading3Quarters /> :<IoMdAddCircleOutline />}
       </Button>
     </Form>
   );

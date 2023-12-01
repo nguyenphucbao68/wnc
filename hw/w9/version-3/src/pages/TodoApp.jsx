@@ -3,24 +3,30 @@ import FilterTaskFrom from '../components/FilterTaskForm/FilterTaskFrom';
 import AddTaskForm from '../components/AddTaskForm/AddTaskForm';
 import TaskList from '../components/TaskList/TaskList';
 import { Accordion } from 'react-bootstrap';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { TaskContext } from '../contexts/TaskProvider';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function TodoApp() {
   const { tasks, dispatch } = useContext(TaskContext);
+  const [isPending, setIsPending] = useState(true)
 
   useEffect(() => {
-    (()=>
     setTimeout(()=>
     fetch("http://localhost:3001/tasks")
     .then((rawData)=> rawData.json())
-    .then((data)=>dispatch({ type: 'INITIALIZE_TASKS', payload: data })), 2000))()
+    .then((data)=>{
+      dispatch({ type: 'INITIALIZE_TASKS', payload: data });
+      setIsPending(false);
+    }), 2000)
     
   }, [dispatch]);
 
   return (
     <div className='container'>
+      {isPending && <div>Loading...</div>}
+      {!isPending && tasks && (
+      <div>
       <FilterTaskFrom />
 
       <AddTaskForm />
@@ -37,6 +43,7 @@ function TodoApp() {
           </Accordion.Item>
         </Accordion>
       ) : null}
+      </div>)}
 
     </div>
   );
