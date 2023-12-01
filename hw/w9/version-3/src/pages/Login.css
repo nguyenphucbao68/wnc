@@ -1,0 +1,27 @@
+.login {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 25%;
+}
+
+.login input:nth-last-child(n+2){
+    position: relative;
+    width: 100%;
+}
+.login input{
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+.login form{
+    padding-left: 1%;
+}
+.login > div{
+    color: red;
+    position: absolute;
+    left: 50%;
+    width:max-content;
+    transform: translate(-50%, 0);
+}
