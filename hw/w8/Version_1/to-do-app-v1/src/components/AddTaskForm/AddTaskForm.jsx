@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import { Form, Button } from 'react-bootstrap';
+import React, { useRef } from 'react';
+import { Button, Form } from 'react-bootstrap';
 import { IoMdAddCircleOutline } from 'react-icons/io';
 
 function AddTaskForm({ onAddItem }) {
-  const [newTask, setNewTask] = useState('');
+  const formRef = useRef();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    const newTask = formRef.current.value;
     if (newTask.trim() !== '') {
       onAddItem(newTask);
-      setNewTask('');
+      formRef.current.value = '';
     }
   };
 
@@ -19,10 +19,9 @@ function AddTaskForm({ onAddItem }) {
       <Form.Group controlId='addTask'>
         <Form.Control
           type='text'
+          ref={formRef}
           placeholder='Add a task'
           size='sm'
-          value={newTask}
-          onChange={(e) => setNewTask(e.target.value)}
         />
       </Form.Group>
       <Button
@@ -32,7 +31,7 @@ function AddTaskForm({ onAddItem }) {
         className='align-self-end'
       >
         Add
-        <IoMdAddCircleOutline />
+        <IoMdAddCircleOutline className='ms-2' />
       </Button>
     </Form>
   );

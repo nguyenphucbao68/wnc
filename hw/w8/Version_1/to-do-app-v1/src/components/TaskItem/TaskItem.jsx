@@ -12,7 +12,7 @@ function TaskItem({ task, onToggleComplete }) {
       <Button
         variant={task.completed ? 'success' : 'outline-success'}
         onClick={handleToggleComplete}
-        className='mr-2'
+        className='me-2'
       >
         {task.completed ? <IoMdRemove /> : <IoMdAdd />}
       </Button>

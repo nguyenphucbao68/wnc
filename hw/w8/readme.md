@@ -67,14 +67,14 @@ In the `src` folder of our project, we create 2 folders named `components` and `
 
 ### Creating the TaskListItem component
 
-The `TaskListItem` component is responsible for rendering individual tasks. Each task is presented with a title and a button, allowing users to mark the task as completed by clicking the button.
+The `TaskItem` component is responsible for rendering individual tasks. Each task is presented with a title and a button, allowing users to mark the task as completed by clicking the button.
 
 Task has a completion status that can be toggled. Completed task has a different style from incomplete tasks. This interactive feature provides a user-friendly way to manage and track the progress of tasks within the application
 
-Create the folder `TaskListItem` in `components` folder. Then create file `TaskListItem.jsx`
+Create the folder `TaskItem` in `components` folder. Then create file `TaskItem.jsx`
 
 ```jsx
-// TaskListItem.jsx
+// TaskItem.jsx
 
 import React from 'react';
 import { ListGroup, Button } from 'react-bootstrap';
@@ -132,45 +132,41 @@ Create the folder `AddTaskForm` in `components` folder. Then create file `AddTas
 ```jsx
 // AddTaskForm.jsx
 
-import React, { useState } from 'react';
-import Form from 'react-bootstrap/Form';
-import { Button } from 'react-bootstrap';
+import React, { useRef } from 'react';
+import { Button, Form } from 'react-bootstrap';
+import { IoMdAddCircleOutline } from 'react-icons/io';
 
-function AddTaskForm(props) {
-  const [newTask, setNewTask] = useState('');
+function AddTaskForm({ onAddItem }) {
+  const formRef = useRef();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    const newTask = formRef.current.value;
     if (newTask.trim() !== '') {
-      setNewTask('');
+      onAddItem(newTask);
+      formRef.current.value = '';
     }
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <Form.Group controlId='addTask' style={{ padding: '10px' }}>
+    <Form onSubmit={handleSubmit} className='d-flex flex-column gap-2'>
+      <Form.Group controlId='addTask'>
         <Form.Control
           type='text'
+          ref={formRef}
           placeholder='Add a task'
           size='sm'
-          value={newTask}
-          onChange={(e) => setNewTask(e.target.value)}
         />
-        <div
-          style={{
-            width: '100%',
-            backgroundColor: '#faf9f8',
-            padding: '5px',
-            display: 'flex',
-            justifyContent: 'flex-end',
-          }}
-        >
-          <Button variant='primary' size='sm' type='submit'>
-            Add
-          </Button>
-        </div>
       </Form.Group>
+      <Button
+        variant='primary'
+        size='sm'
+        type='submit'
+        className='align-self-end'
+      >
+        Add
+        <IoMdAddCircleOutline className='ms-2' />
+      </Button>
     </Form>
   );
 }
@@ -178,7 +174,7 @@ function AddTaskForm(props) {
 export default AddTaskForm;
 ```
 
-The `useState` hook is used to create a state variable newTask to manage the input of a new task in the form.
+Uses the `useRef` hook to create a reference (formRef) that will be attached to the input field in the form.
 
 The `handleSubmit` function is called when the form is submitted. It prevents the default form submission behavior and checks if the newTask is not an empty string before calling the onAddItem function passed as a prop. After adding the task, the newTask state is cleared.
 
@@ -192,21 +188,19 @@ Create the folder `FilterTask` in `components` folder. Then create file `FilterT
 
 ```jsx
 // FilterTask.jsx
-
-import React, { useState } from 'react';
+import React from 'react';
 
 import { Form } from 'react-bootstrap';
 
-function FilterTaskFrom(props) {
-  const [filterTasks, setFilterTasks] = useState('');
-
+function FilterTaskFrom({ onFilterTasks }) {
   return (
     <Form.Control
+      className='my-3'
       type='text'
+      placeholder='Search tasks'
       id='filterTasks'
       size='sm'
-      value={filterTasks}
-      onChange={(e) => setFilterTasks(e.target.value)}
+      onChange={(e) => onFilterTasks(e.target.value)}
     />
   );
 }
@@ -613,29 +607,53 @@ Define taskReducer:
 
 ```jsx
 const taskReducer = (state, action) => {
-  console.log({ state, action });
   switch (action.type) {
     case 'ADD_TASK': {
-      return [
-        ...state,
+      const newTasks = [
+        ...state.currentTasks,
         {
           id: Date.now(),
           title: action.payload,
           completed: false,
         },
       ];
+      localStorage.setItem('todo-v2', JSON.stringify(newTasks));
+      return {
+        filteredTasks: newTasks,
+        currentTasks: newTasks,
+      };
     }
 
     case 'TOGGLE_TASK': {
-      return state.map((task) =>
+      const newTasks = state.currentTasks.map((task) =>
         task.id === action.payload
           ? { ...task, completed: !task.completed }
           : task
       );
+      const newFilteredTasks = state.filteredTasks.map((task) =>
+        task.id === action.payload
+          ? { ...task, completed: !task.completed }
+          : task
+      );
+      localStorage.setItem('todo-v2', JSON.stringify(newFilteredTasks));
+      return {
+        filteredTasks: newFilteredTasks,
+        currentTasks: newTasks,
+      };
+    }
+
+    case 'FILTER_TASK': {
+      return {
+        ...state,
+        filteredTasks: action.payload,
+      };
     }
 
     case 'INITIALIZE_TASKS': {
-      return [...action.payload];
+      return {
+        filteredTasks: action.payload,
+        currentTasks: action.payload,
+      };
     }
 
     default:
@@ -650,8 +668,13 @@ Create TaskProvider component:
 - Provide the `TaskContext.Provider` with the value prop containing the `tasks` and `dispatch` function.
 
 ```jsx
+const initialTasks = {
+  currentTasks: [],
+  filteredTasks: [],
+};
+
 export const TaskProvider = ({ children }) => {
-  const [tasks, dispatch] = useReducer(taskReducer, []);
+  const [tasks, dispatch] = useReducer(taskReducer, initialTasks);
 
   return (
     <TaskContext.Provider value={{ tasks, dispatch }}>
@@ -660,6 +683,7 @@ export const TaskProvider = ({ children }) => {
   );
 };
 ```
+Initializes the state for the tasks context. The state consists of two arrays, `currentTasks` and `filteredTasks`, both initially set to empty arrays.
 
 Now, you can use the TaskProvider in your index.js or any higher-level component to wrap your TodoApp component.
 
@@ -689,6 +713,7 @@ In the TaskItem component, the onToggleComplete prop has been removed. Instead, 
 
 ```jsx
 // TaskItem.jsx;
+
 function TaskItem({ task }) {
   const { dispatch } = useContext(TaskContext);
 
@@ -703,10 +728,12 @@ function TaskItem({ task }) {
     <ListGroup.Item action variant={task.completed ? 'success' : 'primary'}>
       <Button
         variant={task.completed ? 'success' : 'outline-success'}
-        style={{ marginRight: '4px' }}
         onClick={handleToggleComplete}
-      />
-      {task.title}
+        className='me-2'
+      >
+        {task.completed ? <IoMdRemove /> : <IoMdAdd />}
+      </Button>
+      <span>{task.completed ? <del>{task.title}</del> : task.title}</span>
     </ListGroup.Item>
   );
 }
@@ -720,78 +747,90 @@ Similar to the `TaskItem` component, the `onAddItem` prop is removed from the `A
 // AddTaskForm.jsx
 
 function AddTaskForm() {
-  const [newTask, setNewTask] = useState('');
+  const formRef = useRef();
   const { dispatch } = useContext(TaskContext);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    const newTask = formRef.current.value;
     if (newTask.trim() !== '') {
       dispatch({
         type: 'ADD_TASK',
         payload: newTask,
       });
-      setNewTask('');
+      
+      formRef.current.value = '';
     }
   };
 
-  // ... rest of the code
+  // The rest of code...
 }
 ```
 Remember to remove `onAddItem` props pass from `TaskList` component to `TaskItem`
 
+### FilterTaskForm Component
+In `FilterTaskForm` component, uses the `useContext` hook to access the `TaskContext` and retrieve the `tasks` state and `dispatch` function.
+
+Handles the filtering logic internally in the component.
+
+When the input value changes, it dispatches an action to update the tasks based on the filtering logic.
+```jsx
+// FilterTaskForm.jsx
+
+function FilterTaskFrom() {
+  const { tasks, dispatch } = useContext(TaskContext);
+
+  const onFilterTasks = (value) => {
+    dispatch({
+      type: 'FILTER_TASK',
+      payload:
+        value.trim() === ''
+          ? tasks.currentTasks
+          : tasks.currentTasks.filter(({ title }) => {
+              return title.toLowerCase().includes(value.toLowerCase());
+            }),
+    });
+  };
+
+  // The rest of code
+}
+```
 ### TodoApp page
 
-In the TodoApp component, all state-related to tasks has been removed. Tasks are now imported directly from the TaskContext. Here's a breakdown:
+In the `TodoApp` component, all state-related to tasks has been removed. Tasks are now imported directly from the TaskContext. Here's a breakdown:
 
 ```jsx
 //TodoApp.jsx
 function TodoApp() {
   const { tasks, dispatch } = useContext(TaskContext);
 
-  const [filteredList, setFilteredList] = useState([...tasks]);
-
   useEffect(() => {
-    const storedTasks = JSON.parse(localStorage.getItem('todo'));
+    const storedTasks = JSON.parse(localStorage.getItem('todo-v2'));
     if (storedTasks) {
       dispatch({ type: 'INITIALIZE_TASKS', payload: storedTasks });
     }
   }, [dispatch]);
 
-  useEffect(() => {
-    setFilteredList([...tasks]);
-    localStorage.setItem('todo', JSON.stringify(tasks));
-  }, [tasks]);
-
-  const onFilterTasks = (value) => {
-    if (value.trim() === '') {
-      setFilteredList([...tasks]);
-    } else {
-      const filteredTasks = tasks.filter(({ title }) => {
-        return title.toLowerCase().includes(value.toLowerCase());
-      });
-      setFilteredList(filteredTasks);
-    }
-  };
-
-  const uncompletedTasks = filteredList.filter(({ completed }) => !completed);
-  const completedTasks = filteredList.filter(({ completed }) => completed);
+  const uncompletedTasks = tasks.filteredTasks.filter(
+    ({ completed }) => !completed
+  );
+  const completedTasks = tasks.filteredTasks.filter(
+    ({ completed }) => completed
+  );
 
   return (
-    <div
-      style={{
-        width: '70%',
-        margin: 'auto',
-        backgroundColor: 'gray',
-      }}
-    >
-      <FilterTaskFrom onFilterTasks={onFilterTasks} />
+    <div className='container'>
+      <FilterTaskFrom />
       <AddTaskForm />
+      {uncompletedTasks.length > 0 && <p class='h2'>Uncompleted Tasks</p>}
       <TaskList taskListItems={uncompletedTasks} />
       {completedTasks.length > 0 ? (
         <Accordion defaultActiveKey='0' className='mt-4'>
           <Accordion.Item eventKey='0'>
-            <Accordion.Header>Completed</Accordion.Header>
+            <Accordion.Header>
+              <b>Completed</b>
+            </Accordion.Header>
             <Accordion.Body>
               <TaskList taskListItems={completedTasks} />
             </Accordion.Body>
