@@ -17,6 +17,7 @@ const Login = () => {
   });
   const [invalidSubmit, setInvalidSubmit] = useState(false);
   const navigate = useNavigate();
+
   const onSubmit = (data) => {
     if(data.password === "Admin"){
         localStorage.isLogin = true;
