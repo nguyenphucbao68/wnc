@@ -26,8 +26,8 @@ function TodoApp() {
   };
 
   const onToggleComplete = (id) => {
-    setTodoList(
-      todoList.map((item) =>
+    setFilteredList(
+      filteredList.map((item) =>
         item.id === id ? { ...item, completed: !item.completed } : item
       )
     );
