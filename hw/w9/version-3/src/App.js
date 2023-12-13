@@ -11,14 +11,12 @@ import {
 } from "react-router-dom";
 import PrivateRoute from "./utils/PrivateRoute";
 
-const isLogin = JSON.parse(localStorage.getItem("isLogin"));
-
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
       <Route
         index
-        element={isLogin ? <Navigate to="/todo" replace={true} /> : <Login />}
+        element={<Login />}
       />
       <Route element={<PrivateRoute />}>
         <Route

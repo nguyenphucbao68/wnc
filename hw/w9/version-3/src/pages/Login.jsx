@@ -1,10 +1,11 @@
 import { useForm } from "react-hook-form";
 import './Login.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  
   const {
     register,
     handleSubmit,
@@ -15,8 +16,15 @@ const Login = () => {
         password: ""
     }
   });
+  useEffect(()=>{
+    const check = JSON.parse(localStorage.getItem("isLogin"));
+    if(check){
+      navigate('/todo', {replace: true})
+    }
+  },[])
   const [invalidSubmit, setInvalidSubmit] = useState(false);
   const navigate = useNavigate();
+  
 
   const onSubmit = (data) => {
     if(data.password === "Admin"){
